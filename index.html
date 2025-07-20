@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kyrgyz Expedition</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: #fff; }
+        body.dark { background-color: #0a0a0a; }
+        html { scroll-behavior: smooth; }
+        .video-overlay::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.2); z-index: 1; }
+        .lang-btn.active { color: #3b82f6; font-weight: bold; }
+        .dark .lang-btn.active { color: #60a5fa; }
+        section { transition: opacity 0.7s ease-in-out, transform 0.7s ease-in-out; }
+    </style>
+</head>
+<body class="bg-white dark:bg-black text-gray-800 dark:text-gray-200 transition-colors duration-500">
+
+    <div id="app">
+        <app-header
+            @toggle-theme="toggleTheme"
+            @set-language="setLanguage"
+            :current-theme="store.theme"
+            :current-lang="store.language"
+            :t="t"
+        ></app-header>
+
+        <main>
+            <app-hero :t="t"></app-hero>
+            <app-tour-types :t="t"></app-tour-types>
+            <app-expeditions :t="t"></app-expeditions>
+            <app-rentals :t="t"></app-rentals>
+            <app-agency-info :t="t" :current-theme="store.theme"></app-agency-info>
+            <app-gallery :t="t"></app-gallery>
+        </main>
+
+        <app-contact-button :t="t"></app-contact-button>
+        <app-footer :t="t"></app-footer>
+    </div>
+
+    <script>
+        const { createApp, reactive, computed, onMounted, watchEffect, ref } = Vue;
+
+        const translations = {
+            ru: {
+                site_title: "Kyrgyz Expedition - Туры по Кыргызстану",
+                company_name: "Kyrgyz Expedition",
+                nav_tour_types: "Виды Туров",
+                nav_expeditions: "Экспедиции",
+                nav_rentals: "Аренда",
+                tour_types_title: "Виды Туров",
+                tour_types_subtitle: "Найдите приключение, которое подходит именно вам.",
+                tour_types: [
+                    { id: 1, img: 'img/WhatsApp Image 2025-07-18 at 22.10.09.jpeg', title: 'Горные Туры', desc: 'Покоряйте вершины и наслаждайтесь видами Тянь-Шаня.' },
+                    { id: 2, img: 'https://images.pexels.com/photos/1149601/pexels-photo-1149601.jpeg', title: 'Велотуры', desc: 'Исследуйте горные тропы и долины на двух колесах.' },
+                    { id: 3, img: 'https://images.pexels.com/photos/386009/pexels-photo-386009.jpeg', title: 'Джип-туры', desc: 'Доберитесь до самых отдаленных и диких уголков страны.' }
+                ],
+                tour_types_btn: "Смотреть туры",
+                expeditions_title: "Наши Экспедиции",
+                expeditions_subtitle: "Готовые маршруты, продуманные до мелочей.",
+                expeditions: [
+                    { id: 1, img: 'https://images.pexels.com/photos/2440337/pexels-photo-2440337.jpeg', title: 'Треккинг к Ала-Кулю', price: 'от $450' },
+                    { id: 2, img: 'https://images.pexels.com/photos/1688033/pexels-photo-1688033.jpeg', title: 'Кони Сон-Куля', price: 'от $380' },
+                    { id: 3, img: './photo_5402287222021025777_y.jpg', title: 'Каньоны Юга', price: 'от $550' },
+                    { id: 4, img: './photo_5402287222021025777_y.jpg', title: 'Пик Ленина', price: 'от $1200' },
+                    { id: 5, img: 'https://images.pexels.com/photos/2397414/pexels-photo-2397414.jpeg', title: 'Перевалы Памира', price: 'от $900' },
+                    { id: 6, img: 'https://images.pexels.com/photos/2085831/pexels-photo-2085831.jpeg', title: 'Зимняя Сказка', price: 'от $600' }
+                ],
+                details_btn: "Подробнее",
+                all_expeditions_btn: "Смотреть все экспедиции",
+                rentals_title: "Аренда Снаряжения",
+                rentals_subtitle: "Качественное оборудование для ваших путешествий.",
+                rentals: [
+                    { id: 1, img: './img/palatka.jpg', title: 'Палатки', desc: 'Надежные 2-х и 3-х местные палатки для любых условий.' },
+                    { id: 2, img: './img/spalnik.jpg', title: 'Спальники', desc: 'Теплые спальные мешки с температурным режимом до -15°C.' },
+                    { id: 3, img: 'img/palka.jpg', title: 'Треккинговые палки', desc: 'Легкие и прочные палки для комфортных походов.' },
+                ],
+                all_rentals_btn: "Весь каталог снаряжения",
+                agency_title: "О нашем тур агентстве",
+                agency_description: "Мы - команда профессионалов, любящих Кыргызстан и готовых поделиться этой любовью с вами.",
+                our_location: "Наше местоположение",
+                bishkek_kyrgyzstan: "Бишкек, Кыргызстан",
+                learn_more_about_us: "Узнать больше о нас",
+                gallery_title: "Наша галерея",
+                contact_btn: "Напишите нам",
+                footer_copyright: "© 2025 Kyrgyz Expedition. Все права защищены."
+            },
+            en: {
+                site_title: "Kyrgyz Expedition - Tours in Kyrgyzstan",
+                company_name: "Kyrgyz Expedition",
+                nav_tour_types: "Tour Types",
+                nav_expeditions: "Expeditions",
+                nav_rentals: "Rentals",
+                tour_types_title: "Types of Tours",
+                tour_types_subtitle: "Find the adventure that suits you best.",
+                tour_types: [
+                    { id: 1, img: './photo_5402287222021025777_y.jpg', title: 'Mountain Tours', desc: 'Conquer the peaks and enjoy the views of the Tien Shan.' },
+                    { id: 2, img: 'https://images.pexels.com/photos/1149601/pexels-photo-1149601.jpeg', title: 'Bike Tours', desc: 'Explore mountain trails and valleys on two wheels.' },
+                    { id: 3, img: 'https://images.pexels.com/photos/386009/pexels-photo-386009.jpeg', title: 'Jeep Tours', desc: 'Get to the most remote and wild corners of the country.' }
+                ],
+                tour_types_btn: "View Tours",
+                expeditions_title: "Our Expeditions",
+                expeditions_subtitle: "Ready-made routes, thought out to the smallest detail.",
+                expeditions: [
+                    { id: 1, img: 'https://images.pexels.com/photos/2440337/pexels-photo-2440337.jpeg', title: 'Trek to Ala-Kul', price: 'from $450' },
+                    { id: 2, img: 'https://images.pexels.com/photos/1688033/pexels-photo-1688033.jpeg', title: 'Horses of Son-Kul', price: 'from $380' },
+                    { id: 3, img: './photo_5402287222021025777_y.jpg', title: 'Canyons of the South', price: 'from $550' },
+                    { id: 4, img: './photo_5402287222021025777_y.jpg', title: 'Lenin Peak', price: 'from $1200' },
+                    { id: 5, img: 'https://images.pexels.com/photos/2397414/pexels-photo-2397414.jpeg', title: 'Passes of the Pamir', price: 'from $900' },
+                    { id: 6, img: 'https://images.pexels.com/photos/2085831/pexels-photo-2085831.jpeg', title: 'Winter Fairytale', price: 'from $600' }
+                ],
+                details_btn: "Details",
+                all_expeditions_btn: "View all expeditions",
+                rentals_title: "Equipment Rentals",
+                rentals_subtitle: "Quality equipment for your journeys.",
+                rentals: [
+                     { id: 1, img: './photo_5402287222021025777_y.jpg', title: 'Tents', desc: 'Reliable 2 and 3-person tents for all conditions.' },
+                    { id: 2, img: 'https://images.pexels.com/photos/9810313/pexels-photo-9810313.jpeg', title: 'Sleeping Bags', desc: 'Warm sleeping bags with temperature ratings down to -15°C.' },
+                    { id: 3, img: 'https://images.pexels.com/photos/6604616/pexels-photo-6604616.jpeg', title: 'Trekking Poles', desc: 'Lightweight and durable poles for comfortable hiking.' },
+                ],
+                all_rentals_btn: "Full Equipment Catalog",
+                agency_title: "About our tour agency",
+                agency_description: "We are a team of professionals who love Kyrgyzstan and are ready to share this love with you.",
+                our_location: "Our Location",
+                bishkek_kyrgyzstan: "Bishkek, Kyrgyzstan",
+                learn_more_about_us: "Learn more about us",
+                gallery_title: "Our gallery",
+                contact_btn: "Contact Us",
+                footer_copyright: "© 2025 Kyrgyz Expedition. All rights reserved."
+            },
+            de: {
+                site_title: "Kyrgyz Expedition - Touren in Kirgisistan",
+                company_name: "Kyrgyz Expedition",
+                nav_tour_types: "Tourarten",
+                nav_expeditions: "Expeditionen",
+                nav_rentals: "Verleih",
+                tour_types_title: "Arten von Touren",
+                tour_types_subtitle: "Finden Sie das Abenteuer, das am besten zu Ihnen passt.",
+                tour_types: [
+                    { id: 1, img: 'https://images.pexels.com/photos/1630135/pexels-photo-1630135.jpeg', title: 'Bergtouren', desc: 'Erobern Sie die Gipfel und genießen Sie die Aussicht auf den Tien Schan.' },
+                    { id: 2, img: 'https://images.pexels.com/photos/1149601/pexels-photo-1149601.jpeg', title: 'Radtouren', desc: 'Erkunden Sie Bergpfade und Täler auf zwei Rädern.' },
+                    { id: 3, img: 'https://images.pexels.com/photos/1149601/pexels-photo-1149601.jpeg', title: 'Jeep-Touren', desc: 'Erreichen Sie die entlegensten und wildesten Ecken des Landes.' }
+                ],
+                tour_types_btn: "Touren ansehen",
+                expeditions_title: "Unsere Expeditionen",
+                expeditions_subtitle: "Fertige Routen, bis ins kleinste Detail durchdacht.",
+                expeditions: [
+                    { id: 1, img: 'https://images.pexels.com/photos/2440337/pexels-photo-2440337.jpeg', title: 'Trekking zum Ala-Kul', price: 'ab $450' },
+                    { id: 2, img: 'https://images.pexels.com/photos/1688033/pexels-photo-1688033.jpeg', title: 'Pferde des Son-Kul', price: 'ab $380' },
+                    { id: 3, img: './photo_5402287222021025777_y.jpg', title: 'Schluchten des Südens', price: 'ab $550' },
+                    { id: 4, img: './photo_5402287222021025777_y.jpg', title: 'Pik Lenin', price: 'ab $1200' },
+                    { id: 5, img: 'https://images.pexels.com/photos/2397414/pexels-photo-2397414.jpeg', title: 'Pässe des Pamir', price: 'ab $900' },
+                    { id: 6, img: 'https://images.pexels.com/photos/2085831/pexels-photo-2085831.jpeg', title: 'Wintermärchen', price: 'ab $600' }
+                ],
+                details_btn: "Details",
+                all_expeditions_btn: "Alle Expeditionen ansehen",
+                rentals_title: "Ausrüstungsverleih",
+                rentals_subtitle: "Qualitativ hochwertige Ausrüstung für Ihre Reisen.",
+                rentals: [
+                     { id: 1, img: 'https://images.pexels.com/photos/2649033/pexels-photo-2649033.jpeg', title: 'Zelte', desc: 'Zuverlässige 2- und 3-Personen-Zelte für alle Bedingungen.' },
+                    { id: 2, img: 'https://images.pexels.com/photos/9810313/pexels-photo-9810313.jpeg', title: 'Schlafsäcke', desc: 'Warme Schlafsäcke mit Temperaturbereichen bis -15°C.' },
+                    { id: 3, img: 'https://images.pexels.com/photos/6604616/pexels-photo-6604616.jpeg', title: 'Trekkingstöcke', desc: 'Leichte und robuste Stöcke für bequemes Wandern.' },
+                ],
+                all_rentals_btn: "Gesamter Ausrüstungskatalog",
+                agency_title: "Über unsere Reiseagentur",
+                agency_description: "Wir sind ein Team von Profis, die Kirgisistan lieben und bereit sind, diese Liebe mit Ihnen zu teilen.",
+                our_location: "Unser Standort",
+                bishkek_kyrgyzstan: "Bischkek, Kirgisistan",
+                learn_more_about_us: "Mehr über uns erfahren",
+                gallery_title: "Unsere Galerie",
+                contact_btn: "Kontakt",
+                footer_copyright: "© 2025 Kyrgyz Expedition. Alle Rechte vorbehalten."
+            }
+        };
+
+        const app = createApp({
+            setup() {
+                const store = reactive({
+                    theme: 'dark',
+                    language: 'ru',
+                });
+
+                const t = computed(() => translations[store.language]);
+
+                const toggleTheme = () => {
+                    store.theme = store.theme === 'light' ? 'dark' : 'light';
+                    localStorage.setItem('theme', store.theme);
+                };
+
+                const setLanguage = (lang) => {
+                    store.language = lang;
+                    localStorage.setItem('language', lang);
+                    document.documentElement.lang = lang;
+                    document.title = t.value.site_title;
+                };
+
+                watchEffect(() => {
+                    document.documentElement.classList.toggle('dark', store.theme === 'dark');
+                });
+
+                onMounted(() => {
+                    const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                    store.theme = savedTheme;
+                    const savedLang = localStorage.getItem('language') || 'ru';
+                    setLanguage(savedLang);
+                });
+
+                return { store, t, toggleTheme, setLanguage };
+            }
+        });
+
+        // --- COMPONENTS ---
+
+        app.component('app-header', {
+            props: ['currentTheme', 'currentLang', 't'],
+            emits: ['toggleTheme', 'setLanguage'],
+            setup(props, { emit }) {
+                const isMobileMenuOpen = ref(false);
+                const isLangDropdownOpen = ref(false);
+
+                const toggleMobileMenu = () => {
+                    isMobileMenuOpen.value = !isMobileMenuOpen.value;
+                    if (isMobileMenuOpen.value) {
+                        isLangDropdownOpen.value = false;
+                    }
+                };
+
+                const toggleLangDropdown = () => {
+                    isLangDropdownOpen.value = !isLangDropdownOpen.value;
+                    if (isLangDropdownOpen.value) {
+                        isMobileMenuOpen.value = false;
+                    }
+                };
+                
+                const selectLanguage = (lang) => {
+                    emit('setLanguage', lang);
+                    isLangDropdownOpen.value = false;
+                };
+
+                return { isMobileMenuOpen, isLangDropdownOpen, toggleMobileMenu, toggleLangDropdown, selectLanguage };
+            },
+            template: `
+                <header class="fixed top-0 left-0 right-0 z-40 bg-white dark:bg-black md:bg-white/80 md:dark:bg-black/70 md:backdrop-blur-sm transition-colors duration-300">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="flex items-center justify-between h-16 md:h-20">
+                            <a href="#home" class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white tracking-wider">
+                                {{ t.company_name }}
+                            </a>
+                            <div class="flex items-center">
+                                <nav class="hidden md:flex items-baseline space-x-4">
+                                    <a href="#tour-types" class="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">{{ t.nav_tour_types }}</a>
+                                    <a href="#expeditions" class="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">{{ t.nav_expeditions }}</a>
+                                    <a href="#rentals" class="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">{{ t.nav_rentals }}</a>
+                                </nav>
+                                <div class="ml-4 flex items-center space-x-2">
+                                    <div class="hidden md:flex items-center space-x-1 text-sm">
+                                        <button @click="selectLanguage('ru')" class="lang-btn p-1" :class="{ 'active': currentLang === 'ru' }">RU</button>
+                                        <span class="text-gray-300 dark:text-gray-600">/</span>
+                                        <button @click="selectLanguage('en')" class="lang-btn p-1" :class="{ 'active': currentLang === 'en' }">EN</button>
+                                        <span class="text-gray-300 dark:text-gray-600">/</span>
+                                        <button @click="selectLanguage('de')" class="lang-btn p-1" :class="{ 'active': currentLang === 'de' }">DE</button>
+                                    </div>
+                                    <div class="relative md:hidden">
+                                        <button @click="toggleLangDropdown" class="bg-gray-200 dark:bg-gray-700 px-3 py-1.5 rounded-full text-sm font-medium">{{ currentLang.toUpperCase() }}</button>
+                                        <div v-if="isLangDropdownOpen" class="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
+                                            <a href="#" @click.prevent="selectLanguage('ru')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Русский</a>
+                                            <a href="#" @click.prevent="selectLanguage('en')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">English</a>
+                                            <a href="#" @click.prevent="selectLanguage('de')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Deutsch</a>
+                                        </div>
+                                    </div>
+                                    
+                                    <button @click="$emit('toggleTheme')" type="button" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
+                                        <svg v-if="currentTheme === 'light'" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                                        <svg v-else class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1zM6.464 14.364l-.707.707a1 1 0 001.414 1.414l.707-.707a1 1 0 00-1.414-1.414z"></path></svg>
+                                    </button>
+                                    
+                                    <button @click="toggleMobileMenu" class="md:hidden p-2 rounded-full text-gray-500 dark:text-gray-400">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path v-if="!isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                                            <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="isMobileMenuOpen" class="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden" @click="toggleMobileMenu"></div>
+                     <div class="fixed top-0 right-0 h-full w-3/4 max-w-xs bg-white dark:bg-gray-800 shadow-lg z-50 transform transition-transform duration-300 ease-in-out" :class="isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'">
+                        <button @click="toggleMobileMenu" class="absolute top-4 right-4 p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
+                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <nav class="flex flex-col p-8 space-y-2 pt-20">
+                            <a href="#tour-types" @click="toggleMobileMenu" class="text-gray-800 dark:text-gray-200 text-lg p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">Виды туров</a>
+                            <a href="#expeditions" @click="toggleMobileMenu" class="text-gray-800 dark:text-gray-200 text-lg p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">Экспедиции</a>
+                            <a href="#rentals" @click="toggleMobileMenu" class="text-gray-800 dark:text-gray-200 text-lg p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">Аренда</a>
+                        </nav>
+                    </div>
+                </header>
+            `
+        });
+        
+        app.component('app-hero', {
+            template: `<section id="home" class="h-screen relative flex items-center justify-center text-center overflow-hidden"><div class="absolute top-0 left-0 w-full h-full video-overlay"><video class="w-full h-full object-cover" autoplay loop muted playsinline><source src="img/document_5404880295184858157.mp4" type="video/mp4"></video></div></section>`
+        });
+        
+       app.component('app-tour-types', {
+    props: ['t'],
+    setup(props) {
+        // Добавляем URL для всех типов туров
+        const tourTypesWithUrls = computed(() => {
+            return props.t.tour_types.map(tour => {
+                let url = '#';
+                if (tour.title.toLowerCase().includes('вело') || tour.title.toLowerCase().includes('bike')) {
+                    url = './biketours.html';
+                } else if (tour.title.toLowerCase().includes('джип') || tour.title.toLowerCase().includes('jeep')) {
+                    url = './jeeptours.html';
+                } else if (tour.title.toLowerCase().includes('горн') || tour.title.toLowerCase().includes('mountain')) {
+                    url = './mountaintours.html';
+                }
+                return { ...tour, url: url };
+            });
+        });
+        return { tourTypesWithUrls };
+    },
+    template: `
+        <section id="tour-types" class="py-16 md:py-20 lg:py-28 bg-white dark:bg-black">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">{{ t.tour_types_title }}</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-base md:text-lg text-gray-500 dark:text-gray-400">{{ t.tour_types_subtitle }}</p>
+                </div>
+                <div class="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    <div v-for="tourType in tourTypesWithUrls" :key="tourType.id" class="group relative rounded-lg overflow-hidden shadow-lg">
+                        <img :src="tourType.img" :alt="tourType.title" class="w-full h-64 sm:h-72 md:h-80 object-cover transform group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4 sm:p-6">
+                            <h3 class="text-xl sm:text-2xl font-bold text-white">{{ tourType.title }}</h3>
+                            <p class="text-gray-200 mt-2 text-sm sm:text-base">{{ tourType.desc }}</p>
+                            <a :href="tourType.url" class="mt-4 inline-block w-full text-center bg-white text-black font-bold py-2 px-5 rounded hover:bg-gray-200 transition-colors">{{ t.tour_types_btn }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>`
+});
+        app.component('app-expeditions', {
+            props: ['t'],
+            template: `
+                <section id="expeditions" class="py-16 md:py-20 lg:py-28 bg-gray-50 dark:bg-gray-900">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="text-center mb-12">
+                            <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">{{ t.expeditions_title }}</h2>
+                            <p class="mt-4 max-w-2xl mx-auto text-base md:text-lg text-gray-500 dark:text-gray-400">{{ t.expeditions_subtitle }}</p>
+                        </div>
+                        <div class="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
+                            <div v-for="exp in t.expeditions" :key="exp.id" class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                                <img :src="exp.img" :alt="exp.title" class="w-full h-56 object-cover">
+                                <div class="p-6">
+                                    <h3 class="font-bold text-xl mb-2 text-gray-900 dark:text-white">{{ exp.title }}</h3>
+                                    <p class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">{{ exp.price }}</p>
+                                    <a href="#" class="w-full block text-center bg-gray-800 text-white dark:bg-white dark:text-black font-bold py-2 px-5 rounded hover:bg-black dark:hover:bg-gray-200 transition-colors">{{ t.details_btn }}</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-12">
+                            <a href="#" class="inline-block bg-transparent border-2 border-gray-800 dark:border-white text-gray-800 dark:text-white font-bold py-3 px-8 text-lg rounded hover:bg-gray-800 hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">{{ t.all_expeditions_btn }}</a>
+                        </div>
+                    </div>
+                </section>`
+        });
+
+        app.component('app-rentals', {
+            props: ['t'],
+            template: `
+                <section id="rentals" class="py-16 md:py-20 lg:py-28 bg-white dark:bg-black">
+                     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="text-center mb-12">
+                            <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">{{ t.rentals_title }}</h2>
+                            <p class="mt-4 max-w-2xl mx-auto text-base md:text-lg text-gray-500 dark:text-gray-400">{{ t.rentals_subtitle }}</p>
+                        </div>
+                        <div class="grid gap-6 sm:gap-8 md:grid-cols-3">
+                            <div v-for="item in t.rentals" :key="item.id" class="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800 p-6 text-center">
+                                <img :src="item.img" :alt="item.title" class="w-full h-56 object-cover rounded-md mb-4">
+                                <h3 class="font-bold text-xl text-gray-900 dark:text-white mb-2">{{ item.title }}</h3>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm">{{ item.desc }}</p>
+                            </div>
+                        </div>
+                        <div class="text-center mt-12">
+                            <a href="#" class="inline-block bg-gray-800 text-white dark:bg-white dark:text-black font-bold py-3 px-8 text-lg rounded hover:bg-black dark:hover:bg-gray-200 transition-colors">{{ t.all_rentals_btn }}</a>
+                        </div>
+                    </div>
+                </section>`
+        });
+
+        app.component('app-agency-info', {
+            props: ['t'],
+            setup() {
+                const logos = ref([
+                    './img/logo1.jpeg',
+                    './img/logo4.jpeg',
+                    './img/logo5.jpeg'
+                ]);
+                const currentLogoIndex = ref(0);
+                const isVisible = ref(true);
+
+                const currentLogo = computed(() => logos.value[currentLogoIndex.value]);
+
+                onMounted(() => {
+                    // Проверка на случай, если логотипов нет, чтобы избежать ошибок
+                    if (!logos.value || logos.value.length === 0) return;
+
+                    setInterval(() => {
+                        isVisible.value = false;
+                        setTimeout(() => {
+                            currentLogoIndex.value = (currentLogoIndex.value + 1) % logos.value.length;
+                            isVisible.value = true;
+                        }, 700); // Должно соответствовать длительности transition
+                    }, 4000); // Каждые 4 секунды
+                });
+
+                return { currentLogo, isVisible };
+            },
+            template: `
+                <section id="agency-info" class="py-16 md:py-20 lg:py-28 bg-gray-50 dark:bg-gray-900">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
+                        <div class="text-left">
+                            <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6">{{ t.agency_title }}</h2>
+                            <p class="text-base md:text-lg text-gray-600 dark:text-gray-300 mb-8">{{ t.agency_description }}</p>
+
+                            <div class="mb-8 p-4 border-l-4 border-blue-500 bg-blue-50 dark:bg-gray-800">
+                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">{{ t.our_location }}</h3>
+                                <p class="text-gray-600 dark:text-gray-300">{{ t.bishkek_kyrgyzstan }}</p>
+                            </div>
+                            
+                            <a href="#agency-info" class="inline-block bg-blue-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-blue-700 transition-colors">{{ t.learn_more_about_us }}</a>
+                        </div>
+                        <div class="flex flex-col items-center justify-center space-y-8">
+                            <div class="relative w-full max-w-xs h-32 md:h-40">
+                                <img :src="currentLogo" alt="Agency Logo" class="absolute inset-0 w-full h-full object-contain transition-opacity duration-700" :class="{ 'opacity-100': isVisible, 'opacity-0': !isVisible }">
+                            </div>
+                            <div class="rounded-lg overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 w-full">
+                                <iframe
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d187123.9519106263!2d74.49225724213328!3d42.87684557934218!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x389eb7dc91b3c881%3A0x492ebaf57cdee27d!2z0JHQuNGI0LrQtdC6!5e0!3m2!1sru!2skg!4v1658189812345!5m2!1sru!2skg"
+                                    width="100%"
+                                    height="300"
+                                    style="border:0;"
+                                    allowfullscreen=""
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `
+        });
+
+
+        app.component('app-gallery', {
+    props: ['t'],
+    setup() {
+        const galleryImages = [
+           { id: 1, src: 'img/IMG_1600.JPG', alt: 'Фото из путешествия 1' },
+{ id: 2, src: 'img/IMG_1617.JPG', alt: 'Фото из путешествия 2' },
+{ id: 3, src: 'img/IMG_1620.JPG', alt: 'Фото из путешествия 3' },
+{ id: 4, src: 'img/IMG_1626.JPG', alt: 'Фото из путешествия 4' },
+{ id: 5, src: 'img/IMG_1738.JPG', alt: 'Фото из путешествия 5' },
+{ id: 6, src: 'img/IMG_1740.JPG', alt: 'Фото из путешествия 6' },
+{ id: 7, src: 'img/IMG_1741.JPG', alt: 'Фото из путешествия 7' },
+{ id: 8, src: 'img/IMG_1925.JPG', alt: 'Фото из путешествия 8' }
+        ];
+        return { galleryImages };
+    },
+    template: `
+        <section id="gallery" class="py-16 md:py-20 lg:py-28 bg-white dark:bg-black">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <a href="./gallery.html" class="inline-block">
+                        <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{{ t.gallery_title }}</h2>
+                    </a>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div v-for="image in galleryImages" :key="image.id" class="group relative overflow-hidden rounded-lg">
+                        <img :src="image.src" :alt="image.alt" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    `
+});
+
+        app.component('app-contact-button', {
+            props: ['t'],
+            setup() {
+                const iconsVisible = ref(false);
+                return { iconsVisible };
+            },
+            template: `
+                <div class="fixed bottom-8 right-8 z-30">
+                    <div v-if="iconsVisible" class="flex flex-col items-center space-y-3 mb-3">
+                        <a href="#" class="bg-gray-200 dark:bg-gray-700 w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform"><svg class="w-7 h-7 text-green-500" viewBox="0 0 24 24" fill="currentColor"><path d="M16.75 13.96c.25.13.4.26.5.41.1.15.15.33.15.56 0 .23-.05.45-.15.68-.1.23-.26.43-.5.6s-.5.33-.8.45c-.3.13-.63.2-1 .2-.43 0-.83-.08-1.2-.24-.4-.16-.78-.38-1.15-.68-.38-.3-.73-.65-1.05-1.05-.33-.4-.6-.8-.8-1.23-.24-.43-.35-.85-.35-1.28s.05-.8.15-1.15c.1-.35.25-.66.45-.93.2-.28.45-.5.75-.68.3-.18.6-.28.9-.33.25-.05.48-.05.7 0 .2.05.38.1.5.18s.25.18.35.3c.1.13.15.25.18.38s.05.28.05.43c0 .15-.03.3-.08.45-.05.15-.1.28-.18.4s-.18.23-.3.33c-.1.1-.23.18-.38.24-.15.05-.3.08-.43.08-.15,0-.28-.03-.4-.08s-.23-.13-.3-.2-.13-.18-.15-.28c-.03-.1-.05-.2-.05-.3 0-.05.01-.1.04-.15.03-.05.08-.08.14-.1.06-.03.13-.03.2 0l.23.05c.25.08.48.2.68.34.2.15.38.3.5.5m-4.8-11.46c-5.25 0-9.53 4.28-9.53 9.53 0 1.65.43 3.3 1.25 4.73L2.2 22l4.8-1.25c1.4.82 3.03 1.25 4.7 1.25h.03c5.25 0 9.5-4.28 9.5-9.53s-4.25-9.5-9.5-9.5z"/></svg></a>
+                        <a href="#" class="bg-gray-200 dark:bg-gray-700 w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform"><svg class="w-7 h-7 text-blue-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.84c-.23.11-.46.22-.68.32-3.17 1.45-6.35 2.9-9.52 4.35-.14.06-.28.13-.41.2-.42.23-.22.6.21.43.53-.22 1.07-.43 1.6-.65 2.15-.86 4.3-1.73 6.45-2.6.14-.06.28-.11.42-.17.1-.04.04-.2-.06-.16-.36.14-.72.29-1.08.43-1.12.45-2.24.9-3.36 1.35-.38.16-.76.31-1.15.47-.18.07-.36.15-.54.22-.3.12-.2.43.12.28.4-.17.8-.35 1.2-.52 2.38-1.03 4.76-2.06 7.14-3.09.2-.08.39-.17.59-.25.22-.1.3-.28.14-.46z"/></svg></a>
+                    </div>
+                    <button @click="iconsVisible = !iconsVisible" class="bg-gray-900 text-white dark:bg-white dark:text-black w-auto px-6 h-12 rounded-full font-semibold shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-105">
+                        <span>{{ t.contact_btn }}</span>
+                    </button>
+                </div>`
+        });
+
+        app.component('app-footer', {
+            props: ['t'],
+            template: `<footer class="bg-gray-100 dark:bg-gray-900"><div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center"><p class="text-gray-500 dark:text-gray-400">{{ t.footer_copyright }}</p></div></footer>`
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>

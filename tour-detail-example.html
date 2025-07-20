@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали тура - Kyrgyz Expedition</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: #fff; }
+        body.dark { background-color: #0a0a0a; }
+        html { scroll-behavior: smooth; }
+        .lang-btn.active { color: #3b82f6; font-weight: bold; }
+        .dark .lang-btn.active { color: #60a5fa; }
+        .modal { background-color: rgba(0, 0, 0, 0.6); }
+    </style>
+</head>
+<body class="bg-white dark:bg-black text-gray-800 dark:text-gray-200 transition-colors duration-500">
+
+    <div id="app" @keydown.esc="isBookingFormOpen = false">
+        <app-header
+            @toggle-theme="toggleTheme"
+            @set-language="setLanguage"
+            :current-theme="store.theme"
+            :current-lang="store.language"
+            :t="t"
+        ></app-header>
+
+        <main>
+            <app-tour-detail :t="t.tour_data" @open-booking-form="isBookingFormOpen = true"></app-tour-detail>
+        </main>
+
+        <app-booking-form v-if="isBookingFormOpen" :t="t" @close="isBookingFormOpen = false"></app-booking-form>
+
+        <app-footer :t="t"></app-footer>
+    </div>
+
+    <script>
+        const { createApp, reactive, computed, onMounted, watchEffect, ref } = Vue;
+
+        const translations = {
+            ru: {
+                site_title: "Поход на Чаткальские горы - Kyrgyz Expedition",
+                company_name: "Kyrgyz Expedition",
+                nav_home: "Главная",
+                tour_data: {
+                    title: "Разведывательный поход на Чаткальские горы",
+                    image: 'img/IMG_6152.JPG', // Пример фото, замените на нужное
+                    dates_title: "Даты",
+                    dates_list: ["Июнь: 20-21-22", "Июль: 4-5-6, 18-19-20"],
+                    locations_title: "Локации",
+                    locations_list: ["Перевалы: Тоо-Ашуу, Отмок, Кара-Буура", "Долина Суусамыр", "Озёра: Кара-Токо (Дубана-Кол), Эшенкул", "Водопад Эшенкул", "Виды на Чаткальские стены"],
+                    program_title: "Программа",
+                    program: [
+                        { day: "День 1", desc: "Выезд рано утром из Бишкека в город Талас. Переезд через перевал Кара-Буура в Чаткальскую долину. Старт трекинга в ущелье Кара-Токо, поход к озеру Кара-Токо. Возвращение к месту кемпинга, установка лагеря, ужин, ночёвка." },
+                        { day: "День 2", desc: "Старт в 8:00, трекинг по ущелью Эшенкул с посещением водопада и озера. Возвращение к кемпингу к вечеру, ужин, ночёвка." },
+                        { day: "День 3", desc: "Завтрак, спуск по ущелью до точки стоянки, выезд в Бишкек." }
+                    ],
+                    cost_title: "Стоимость",
+                    cost_value: "12 500 сом",
+                    includes_title: "Входит в стоимость",
+                    includes_list: ["Транспорт", "2 ночёвки в палатках", "Кемпинговое снаряжение", "Услуги гида"],
+                    excludes_title: "Не входит в стоимость",
+                    excludes_list: ["Расходы на питание во время тура", "Личные расходы"],
+                    book_tour_btn: "Записаться на тур"
+                },
+                booking_form: {
+                    title: "Запись на тур",
+                    subtitle: "Пожалуйста, оставьте ваши данные, и мы скоро с вами свяжемся.",
+                    name_placeholder: "Ваше имя",
+                    phone_placeholder: "Ваш номер телефона",
+                    submit_btn: "Отправить заявку",
+                    success_message: "Спасибо! Ваша заявка принята.",
+                    close_btn: "Закрыть"
+                },
+                footer_copyright: "© 2025 Kyrgyz Expedition. Все права защищены."
+            },
+            // English and German translations can be added here following the same structure
+            en: {
+                site_title: "Chatkal Mountains Hike - Kyrgyz Expedition",
+                company_name: "Kyrgyz Expedition",
+                nav_home: "Home",
+                tour_data: {
+                    title: "Reconnaissance Hike to the Chatkal Mountains",
+                    image: 'img/IMG_6152.JPG',
+                    dates_title: "Dates",
+                    dates_list: ["June: 20-21-22", "July: 4-5-6, 18-19-20"],
+                    locations_title: "Locations",
+                    locations_list: ["Passes: Too-Ashuu, Otmok, Kara-Buura", "Suusamyr Valley", "Lakes: Kara-Toko (Dubana-Kol), Eshenkul", "Eshenkul Waterfall", "Views of the Chatkal walls"],
+                    program_title: "Program",
+                    program: [
+                        { day: "Day 1", desc: "Early morning departure from Bishkek to Talas. Drive over Kara-Buura pass to Chatkal valley. Start trekking in Kara-Toko gorge to Kara-Toko lake. Return to the campsite, set up camp, dinner, overnight." },
+                        { day: "Day 2", desc: "Start at 8:00 AM, trek through Eshenkul gorge visiting the waterfall and lake. Return to the campsite in the evening, dinner, overnight." },
+                        { day: "Day 3", desc: "Breakfast, descend the gorge to the parking point, departure to Bishkek." }
+                    ],
+                    cost_title: "Cost",
+                    cost_value: "12,500 KGS",
+                    includes_title: "Included",
+                    includes_list: ["Transportation", "2 nights in tents", "Camping gear", "Guide services"],
+                    excludes_title: "Not Included",
+                    excludes_list: ["Meal expenses during the tour", "Personal expenses"],
+                    book_tour_btn: "Book This Tour"
+                },
+                booking_form: {
+                    title: "Tour Booking",
+                    subtitle: "Please leave your details, and we will contact you soon.",
+                    name_placeholder: "Your Name",
+                    phone_placeholder: "Your Phone Number",
+                    submit_btn: "Submit Application",
+                    success_message: "Thank you! Your application has been received.",
+                    close_btn: "Close"
+                },
+                footer_copyright: "© 2025 Kyrgyz Expedition. All rights reserved."
+            }
+        };
+
+        const app = createApp({
+            setup() {
+                const store = reactive({ theme: 'dark', language: 'ru' });
+                const isBookingFormOpen = ref(false);
+                const t = computed(() => translations[store.language]);
+                const toggleTheme = () => { store.theme = store.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('theme', store.theme); };
+                const setLanguage = (lang) => { store.language = lang; localStorage.setItem('language', lang); document.documentElement.lang = lang; document.title = t.value.site_title; };
+                watchEffect(() => { document.documentElement.classList.toggle('dark', store.theme === 'dark'); });
+                onMounted(() => {
+                    const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                    store.theme = savedTheme;
+                    const savedLang = localStorage.getItem('language') || 'ru';
+                    setLanguage(savedLang);
+                });
+                return { store, t, toggleTheme, setLanguage, isBookingFormOpen };
+            }
+        });
+
+        // --- COMPONENTS ---
+
+        app.component('app-header', {
+            props: ['currentTheme', 'currentLang', 't'],
+            emits: ['toggleTheme', 'setLanguage'],
+            setup(props, { emit }) {
+                const isLangDropdownOpen = ref(false);
+                const toggleLangDropdown = () => isLangDropdownOpen.value = !isLangDropdownOpen.value;
+                const selectLanguage = (lang) => { emit('setLanguage', lang); isLangDropdownOpen.value = false; };
+                return { isLangDropdownOpen, toggleLangDropdown, selectLanguage };
+            },
+            template: `
+                <header class="fixed top-0 left-0 right-0 z-40 bg-white dark:bg-black md:bg-white/80 md:dark:bg-black/70 md:backdrop-blur-sm transition-colors duration-300">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="flex items-center justify-between h-16 md:h-20">
+                            <a href="./index.html" class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white tracking-wider">{{ t.company_name }}</a>
+                            <div class="flex items-center">
+                                <nav class="hidden md:flex items-baseline space-x-4">
+                                    <a href="./index.html" class="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">{{ t.nav_home }}</a>
+                                </nav>
+                                <div class="ml-4 flex items-center space-x-2">
+                                    <div class="relative">
+                                        <button @click="toggleLangDropdown" class="bg-gray-200 dark:bg-gray-700 px-3 py-1.5 rounded-full text-sm font-medium">{{ currentLang.toUpperCase() }}</button>
+                                        <div v-if="isLangDropdownOpen" class="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
+                                            <a href="#" @click.prevent="selectLanguage('ru')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Русский</a>
+                                            <a href="#" @click.prevent="selectLanguage('en')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">English</a>
+                                        </div>
+                                    </div>
+                                    <button @click="$emit('toggleTheme')" type="button" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
+                                        <svg v-if="currentTheme === 'light'" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                                        <svg v-else class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1zM6.464 14.364l-.707.707a1 1 0 001.414 1.414l.707-.707a1 1 0 00-1.414-1.414z"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            `
+        });
+
+        app.component('app-tour-detail', {
+            props: ['t'],
+            emits: ['openBookingForm'],
+            template: `
+                <div>
+                    <section class="relative h-[50vh] bg-cover bg-center text-white flex items-end p-8" :style="{ backgroundImage: 'url(' + t.image + ')' }">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                        <div class="relative z-10 max-w-7xl mx-auto w-full">
+                            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">{{ t.title }}</h1>
+                        </div>
+                    </section>
+
+                    <section class="py-16 md:py-24 bg-white dark:bg-black">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-12">
+                            <div class="md:col-span-2">
+                                <div class="mb-12">
+                                    <h2 class="text-2xl font-bold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700">{{ t.program_title }}</h2>
+                                    <div class="space-y-6">
+                                        <div v-for="day in t.program" :key="day.day">
+                                            <h3 class="font-semibold text-lg text-gray-900 dark:text-white">{{ day.day }}</h3>
+                                            <p class="mt-1 text-gray-600 dark:text-gray-300">{{ day.desc }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-1">
+                                <div class="sticky top-28 bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                                    <div class="mb-6">
+                                        <h3 class="text-xl font-bold mb-3">{{ t.cost_title }}</h3>
+                                        <p class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ t.cost_value }}</p>
+                                    </div>
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold mb-2">{{ t.dates_title }}</h3>
+                                        <ul class="list-disc list-inside text-gray-600 dark:text-gray-300">
+                                            <li v-for="date in t.dates_list">{{ date }}</li>
+                                        </ul>
+                                    </div>
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold mb-2">{{ t.locations_title }}</h3>
+                                        <p class="text-gray-600 dark:text-gray-300 text-sm">{{ t.locations_list.join(', ') }}</p>
+                                    </div>
+                                    <button @click="$emit('openBookingForm')" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors text-lg">{{ t.book_tour_btn }}</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-bold mb-3 text-green-600 dark:text-green-400">{{ t.includes_title }}</h3>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li v-for="item in t.includes_list">{{ item }}</li>
+                                </ul>
+                            </div>
+                             <div>
+                                <h3 class="text-xl font-bold mb-3 text-red-600 dark:text-red-400">{{ t.excludes_title }}</h3>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li v-for="item in t.excludes_list">{{ item }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            `
+        });
+
+        app.component('app-booking-form', {
+            props: ['t'],
+            emits: ['close'],
+            setup(props, { emit }) {
+                const isSubmitted = ref(false);
+                const handleSubmit = () => {
+                    isSubmitted.value = true;
+                    setTimeout(() => {
+                        isSubmitted.value = false;
+                        emit('close');
+                    }, 3000);
+                };
+                return { isSubmitted, handleSubmit };
+            },
+            template: `
+                <div class="modal fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300" @click.self="$emit('close')">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-8 w-full max-w-md transform transition-transform duration-300 scale-100">
+                        <template v-if="!isSubmitted">
+                            <h2 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">{{ t.booking_form.title }}</h2>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">{{ t.booking_form.subtitle }}</p>
+                            <form @submit.prevent="handleSubmit">
+                                <div class="space-y-4">
+                                    <input class="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-md" type="text" :placeholder="t.booking_form.name_placeholder" required>
+                                    <input class="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-md" type="tel" :placeholder="t.booking_form.phone_placeholder" required>
+                                </div>
+                                <button type="submit" class="mt-6 w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">{{ t.booking_form.submit_btn }}</button>
+                            </form>
+                        </template>
+                        <template v-else>
+                            <div class="text-center">
+                                <svg class="w-16 h-16 mx-auto text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <h2 class="text-2xl font-bold mt-4 text-gray-900 dark:text-white">{{ t.booking_form.success_message }}</h2>
+                                <button @click="$emit('close')" class="mt-6 w-full bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white font-bold py-2 px-4 rounded-lg">{{ t.booking_form.close_btn }}</button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            `
+        });
+
+        app.component('app-footer', {
+            props: ['t'],
+            template: `<footer class="bg-gray-100 dark:bg-gray-900"><div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center"><p class="text-gray-500 dark:text-gray-400">{{ t.footer_copyright }}</p></div></footer>`
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>

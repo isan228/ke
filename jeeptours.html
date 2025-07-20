@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Джип-туры - Kyrgyz Expedition</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: #fff; }
+        body.dark { background-color: #0a0a0a; }
+        html { scroll-behavior: smooth; }
+        .lang-btn.active { color: #3b82f6; font-weight: bold; }
+        .dark .lang-btn.active { color: #60a5fa; }
+    </style>
+</head>
+<body class="bg-white dark:bg-black text-gray-800 dark:text-gray-200 transition-colors duration-500">
+
+    <div id="app">
+        <app-header
+            @toggle-theme="toggleTheme"
+            @set-language="setLanguage"
+            :current-theme="store.theme"
+            :current-lang="store.language"
+            :t="t"
+        ></app-header>
+
+        <main>
+            <section class="relative h-96 bg-cover bg-center text-white flex items-center justify-center text-center" style="background-image: url('https://images.pexels.com/photos/386009/pexels-photo-386009.jpeg');">
+                <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+                <div class="relative z-10">
+                    <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">{{ t.jeeptours_page_title }}</h1>
+                    <p class="mt-4 text-lg md:text-xl max-w-2xl">{{ t.jeeptours_page_subtitle }}</p>
+                </div>
+            </section>
+
+            <app-jeeptour-list :t="t"></app-jeeptour-list>
+
+        </main>
+
+        <app-footer :t="t"></app-footer>
+    </div>
+
+    <script>
+        const { createApp, reactive, computed, onMounted, watchEffect, ref } = Vue;
+
+        const translations = {
+            ru: {
+                site_title: "Kyrgyz Expedition - Джип-туры",
+                company_name: "Kyrgyz Expedition",
+                nav_home: "Главная",
+                jeeptours_page_title: "Джип-туры по Кыргызстану",
+                jeeptours_page_subtitle: "Покоряйте бездорожье и доберитесь до самых диких уголков страны.",
+                tour_difficulty: "Сложность",
+                tour_duration: "Длительность",
+                tour_price: "Цена",
+                details_btn: "Узнать больше",
+                jeep_tours: [
+                    { id: 1, title: "Высокогорные озера", img: "https://images.pexels.com/photos/2440337/pexels-photo-2440337.jpeg", desc: "Экспедиция к таинственным озерам Сон-Куль и Кель-Суу. Вас ждут юрты, звезды и невероятные пейзажи.", difficulty: "Средняя", duration: "8 дней", price: "от $1100" },
+                    { id: 2, title: "Дорогами Шелкового Пути", img: "https://images.pexels.com/photos/2397414/pexels-photo-2397414.jpeg", desc: "Проедьте по легендарному Памирскому тракту и посетите древний Таш-Рабат. История оживает за окном вашего внедорожника.", difficulty: "Высокая", duration: "12 дней", price: "от $1500" },
+                    { id: 3, title: "Каньоны и перевалы", img: "https://images.pexels.com/photos/12850796/pexels-photo-12850796.jpeg", desc: "Исследуйте марсианские каньоны Конорчек и преодолейте захватывающие перевалы центрального Тянь-Шаня.", difficulty: "Средняя", duration: "5 дней", price: "от $750" }
+                ],
+                footer_copyright: "© 2025 Kyrgyz Expedition. Все права защищены."
+            },
+            en: {
+                site_title: "Kyrgyz Expedition - Jeep Tours",
+                company_name: "Kyrgyz Expedition",
+                nav_home: "Home",
+                jeeptours_page_title: "Jeep Tours in Kyrgyzstan",
+                jeeptours_page_subtitle: "Conquer the off-road and reach the wildest corners of the country.",
+                tour_difficulty: "Difficulty",
+                tour_duration: "Duration",
+                tour_price: "Price",
+                details_btn: "Learn More",
+                jeep_tours: [
+                    { id: 1, title: "High-Altitude Lakes", img: "https://images.pexels.com/photos/2440337/pexels-photo-2440337.jpeg", desc: "An expedition to the mysterious lakes of Son-Kul and Kel-Suu. Yurts, stars, and incredible landscapes await you.", difficulty: "Medium", duration: "8 days", price: "from $1100" },
+                    { id: 2, title: "Roads of the Silk Road", img: "https://images.pexels.com/photos/2397414/pexels-photo-2397414.jpeg", desc: "Drive along the legendary Pamir Highway and visit the ancient Tash-Rabat. History comes alive outside your SUV window.", difficulty: "High", duration: "12 days", price: "from $1500" },
+                    { id: 3, title: "Canyons and Passes", img: "https://images.pexels.com/photos/12850796/pexels-photo-12850796.jpeg", desc: "Explore the Martian canyons of Konorchek and conquer the breathtaking passes of the central Tien Shan.", difficulty: "Medium", duration: "5 days", price: "from $750" }
+                ],
+                footer_copyright: "© 2025 Kyrgyz Expedition. All rights reserved."
+            },
+            de: {
+                site_title: "Kyrgyz Expedition - Jeep-Touren",
+                company_name: "Kyrgyz Expedition",
+                nav_home: "Startseite",
+                jeeptours_page_title: "Jeep-Touren in Kirgisistan",
+                jeeptours_page_subtitle: "Erobern Sie das Gelände und erreichen Sie die wildesten Ecken des Landes.",
+                tour_difficulty: "Schwierigkeit",
+                tour_duration: "Dauer",
+                tour_price: "Preis",
+                details_btn: "Mehr erfahren",
+                jeep_tours: [
+                    { id: 1, title: "Hochgebirgsseen", img: "https://images.pexels.com/photos/2440337/pexels-photo-2440337.jpeg", desc: "Eine Expedition zu den geheimnisvollen Seen Son-Kul und Kel-Suu. Jurten, Sterne und unglaubliche Landschaften erwarten Sie.", difficulty: "Mittel", duration: "8 Tage", price: "ab $1100" },
+                    { id: 2, title: "Straßen der Seidenstraße", img: "https://images.pexels.com/photos/2397414/pexels-photo-2397414.jpeg", desc: "Fahren Sie auf dem legendären Pamir Highway und besuchen Sie das alte Tasch-Rabat. Geschichte wird vor dem Fenster Ihres Geländewagens lebendig.", difficulty: "Hoch", duration: "12 Tage", price: "ab $1500" },
+                    { id: 3, title: "Schluchten und Pässe", img: "https://images.pexels.com/photos/12850796/pexels-photo-12850796.jpeg", desc: "Erkunden Sie die marsähnlichen Schluchten von Konorchek und bezwingen Sie die atemberaubenden Pässe des zentralen Tien Shan.", difficulty: "Mittel", duration: "5 Tage", price: "ab $750" }
+                ],
+                footer_copyright: "© 2025 Kyrgyz Expedition. Alle Rechte vorbehalten."
+            }
+        };
+
+        const app = createApp({
+            setup() {
+                const store = reactive({ theme: 'dark', language: 'ru' });
+                const t = computed(() => translations[store.language]);
+                const toggleTheme = () => { store.theme = store.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('theme', store.theme); };
+                const setLanguage = (lang) => { store.language = lang; localStorage.setItem('language', lang); document.documentElement.lang = lang; document.title = t.value.site_title; };
+                watchEffect(() => { document.documentElement.classList.toggle('dark', store.theme === 'dark'); });
+                onMounted(() => {
+                    const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                    store.theme = savedTheme;
+                    const savedLang = localStorage.getItem('language') || 'ru';
+                    setLanguage(savedLang);
+                });
+                return { store, t, toggleTheme, setLanguage };
+            }
+        });
+
+        // --- COMPONENTS ---
+
+        app.component('app-header', {
+            props: ['currentTheme', 'currentLang', 't'],
+            emits: ['toggleTheme', 'setLanguage'],
+            setup(props, { emit }) {
+                const isLangDropdownOpen = ref(false);
+                const toggleLangDropdown = () => isLangDropdownOpen.value = !isLangDropdownOpen.value;
+                const selectLanguage = (lang) => { emit('setLanguage', lang); isLangDropdownOpen.value = false; };
+                return { isLangDropdownOpen, toggleLangDropdown, selectLanguage };
+            },
+            template: `
+                <header class="fixed top-0 left-0 right-0 z-40 bg-white dark:bg-black md:bg-white/80 md:dark:bg-black/70 md:backdrop-blur-sm transition-colors duration-300">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="flex items-center justify-between h-16 md:h-20">
+                            <a href="./index.html" class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white tracking-wider">{{ t.company_name }}</a>
+                            <div class="flex items-center">
+                                <nav class="hidden md:flex items-baseline space-x-4">
+                                    <a href="./index.html" class="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">{{ t.nav_home }}</a>
+                                </nav>
+                                <div class="ml-4 flex items-center space-x-2">
+                                    <div class="relative">
+                                        <button @click="toggleLangDropdown" class="bg-gray-200 dark:bg-gray-700 px-3 py-1.5 rounded-full text-sm font-medium">{{ currentLang.toUpperCase() }}</button>
+                                        <div v-if="isLangDropdownOpen" class="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
+                                            <a href="#" @click.prevent="selectLanguage('ru')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Русский</a>
+                                            <a href="#" @click.prevent="selectLanguage('en')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">English</a>
+                                            <a href="#" @click.prevent="selectLanguage('de')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Deutsch</a>
+                                        </div>
+                                    </div>
+                                    <button @click="$emit('toggleTheme')" type="button" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
+                                        <svg v-if="currentTheme === 'light'" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                                        <svg v-else class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1zM6.464 14.364l-.707.707a1 1 0 001.414 1.414l.707-.707a1 1 0 00-1.414-1.414z"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            `
+        });
+
+        app.component('app-jeeptour-list', {
+            props: ['t'],
+            template: `
+                <section class="py-16 md:py-24 bg-white dark:bg-black">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="grid gap-12 md:gap-16">
+                            <div v-for="tour in t.jeep_tours" :key="tour.id" class="grid md:grid-cols-2 gap-8 items-center">
+                                <img :src="tour.img" :alt="tour.title" class="rounded-lg shadow-lg w-full h-80 object-cover">
+                                <div>
+                                    <h3 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{{ tour.title }}</h3>
+                                    <p class="mt-4 text-gray-600 dark:text-gray-300">{{ tour.desc }}</p>
+                                    <div class="mt-6 flex flex-wrap gap-x-6 gap-y-4 text-sm">
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                            <span class="font-semibold mr-1">{{ t.tour_difficulty }}:</span> {{ tour.difficulty }}
+                                        </div>
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            <span class="font-semibold mr-1">{{ t.tour_duration }}:</span> {{ tour.duration }}
+                                        </div>
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" /></svg>
+                                            <span class="font-semibold mr-1">{{ t.tour_price }}:</span> {{ tour.price }}
+                                        </div>
+                                    </div>
+                                    <a href="#" class="mt-8 inline-block bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">{{ t.details_btn }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `
+        });
+
+        app.component('app-footer', {
+            props: ['t'],
+            template: `<footer class="bg-gray-100 dark:bg-gray-900"><div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center"><p class="text-gray-500 dark:text-gray-400">{{ t.footer_copyright }}</p></div></footer>`
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>

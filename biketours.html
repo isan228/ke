@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Велотуры - Kyrgyz Expedition</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: #fff; }
+        body.dark { background-color: #0a0a0a; }
+        html { scroll-behavior: smooth; }
+        .lang-btn.active { color: #3b82f6; font-weight: bold; }
+        .dark .lang-btn.active { color: #60a5fa; }
+    </style>
+</head>
+<body class="bg-white dark:bg-black text-gray-800 dark:text-gray-200 transition-colors duration-500">
+
+    <div id="app">
+        <app-header
+            @toggle-theme="toggleTheme"
+            @set-language="setLanguage"
+            :current-theme="store.theme"
+            :current-lang="store.language"
+            :t="t"
+        ></app-header>
+
+        <main>
+            <section class="relative h-96 bg-cover bg-center text-white flex items-center justify-center text-center" style="background-image: url('https://images.pexels.com/photos/1149601/pexels-photo-1149601.jpeg');">
+                <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+                <div class="relative z-10">
+                    <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">{{ t.biketours_page_title }}</h1>
+                    <p class="mt-4 text-lg md:text-xl max-w-2xl">{{ t.biketours_page_subtitle }}</p>
+                </div>
+            </section>
+
+            <app-biketour-list :t="t"></app-biketour-list>
+
+        </main>
+
+        <app-footer :t="t"></app-footer>
+    </div>
+
+    <script>
+        const { createApp, reactive, computed, onMounted, watchEffect, ref } = Vue;
+
+        const translations = {
+            ru: {
+                site_title: "Kyrgyz Expedition - Велотуры",
+                company_name: "Kyrgyz Expedition",
+                nav_home: "Главная",
+                biketours_page_title: "Велотуры по Кыргызстану",
+                biketours_page_subtitle: "Откройте для себя горные тропы и живописные долины на двух колесах.",
+                tour_difficulty: "Сложность",
+                tour_duration: "Длительность",
+                tour_price: "Цена", // <-- Новая строка для перевода
+                details_btn: "Узнать больше",
+                bike_tours: [
+                    { id: 1, title: "Вокруг Иссык-Куля", img: "https://images.pexels.com/photos/19973286/pexels-photo-19973286.jpeg", desc: "Захватывающее путешествие вдоль берегов жемчужины Кыргызстана. Идеально подходит для всех уровней подготовки.", difficulty: "Средняя", duration: "7 дней", price: "от $850" }, // <-- Добавлена цена
+                    { id: 2, title: "Тропы Небесных Гор", img: "https://images.pexels.com/photos/2890911/pexels-photo-2890911.jpeg", desc: "Для опытных велосипедистов: сложный маршрут через перевалы Тянь-Шаня с невероятными панорамами.", difficulty: "Высокая", duration: "10 дней", price: "от $1200" },
+                    { id: 3, title: "Долины Сон-Куля", img: "https://images.pexels.com/photos/1688033/pexels-photo-1688033.jpeg", desc: "Живописный маршрут по высокогорным пастбищам вокруг озера Сон-Куль. Познакомьтесь с бытом кочевников.", difficulty: "Средняя", duration: "5 дней", price: "от $650" },
+                    { id: 4, title: "К каньонам Конорчек", img: "https://images.pexels.com/photos/12850796/pexels-photo-12850796.jpeg", desc: "Короткий, но впечатляющий тур к марсианским пейзажам каньонов Конорчек. Отлично для поездки на выходные.", difficulty: "Легкая", duration: "2 дня", price: "от $300" }
+                ],
+                footer_copyright: "© 2025 Kyrgyz Expedition. Все права защищены."
+            },
+            en: {
+                site_title: "Kyrgyz Expedition - Bike Tours",
+                company_name: "Kyrgyz Expedition",
+                nav_home: "Home",
+                biketours_page_title: "Bike Tours in Kyrgyzstan",
+                biketours_page_subtitle: "Discover mountain trails and scenic valleys on two wheels.",
+                tour_difficulty: "Difficulty",
+                tour_duration: "Duration",
+                tour_price: "Price", // <-- New translation line
+                details_btn: "Learn More",
+                bike_tours: [
+                    { id: 1, title: "Around Issyk-Kul Lake", img: "https://images.pexels.com/photos/19973286/pexels-photo-19973286.jpeg", desc: "A breathtaking journey along the shores of the pearl of Kyrgyzstan. Perfect for all skill levels.", difficulty: "Medium", duration: "7 days", price: "from $850" }, // <-- Price added
+                    { id: 2, title: "Celestial Mountains Trails", img: "https://images.pexels.com/photos/2890911/pexels-photo-2890911.jpeg", desc: "For experienced cyclists: a challenging route through the Tien Shan passes with incredible panoramas.", difficulty: "High", duration: "10 days", price: "from $1200" },
+                    { id: 3, title: "Valleys of Son-Kul", img: "https://images.pexels.com/photos/1688033/pexels-photo-1688033.jpeg", desc: "A scenic route through high-altitude pastures around Son-Kul Lake. Get acquainted with the life of nomads.", difficulty: "Medium", duration: "5 days", price: "from $650" },
+                    { id: 4, title: "To Konorchek Canyons", img: "https://images.pexels.com/photos/12850796/pexels-photo-12850796.jpeg", desc: "A short but impressive tour to the Martian landscapes of the Konorchek canyons. Great for a weekend trip.", difficulty: "Easy", duration: "2 days", price: "from $300" }
+                ],
+                footer_copyright: "© 2025 Kyrgyz Expedition. All rights reserved."
+            },
+            de: {
+                site_title: "Kyrgyz Expedition - Radtouren",
+                company_name: "Kyrgyz Expedition",
+                nav_home: "Startseite",
+                biketours_page_title: "Radtouren in Kirgisistan",
+                biketours_page_subtitle: "Entdecken Sie Bergpfade und malerische Täler auf zwei Rädern.",
+                tour_difficulty: "Schwierigkeit",
+                tour_duration: "Dauer",
+                tour_price: "Preis", // <-- Neue Übersetzungszeile
+                details_btn: "Mehr erfahren",
+                bike_tours: [
+                    { id: 1, title: "Rund um den Issyk-Kul-See", img: "https://images.pexels.com/photos/19973286/pexels-photo-19973286.jpeg", desc: "Eine atemberaubende Reise entlang der Ufer der Perle Kirgisistans. Perfekt für alle Könnerstufen.", difficulty: "Mittel", duration: "7 Tage", price: "ab $850" }, // <-- Preis hinzugefügt
+                    { id: 2, title: "Himmelsgebirge-Pfade", img: "https://images.pexels.com/photos/2890911/pexels-photo-2890911.jpeg", desc: "Für erfahrene Radfahrer: eine anspruchsvolle Route über die Pässe des Tien Shan mit unglaublichen Panoramen.", difficulty: "Schwer", duration: "10 Tage", price: "ab $1200" },
+                    { id: 3, title: "Täler von Son-Kul", img: "https://images.pexels.com/photos/1688033/pexels-photo-1688033.jpeg", desc: "Eine malerische Route durch Hochgebirgsweiden rund um den Son-Kul-See. Lernen Sie das Leben der Nomaden kennen.", difficulty: "Mittel", duration: "5 Tage", price: "ab $650" },
+                    { id: 4, title: "Zu den Konorchek-Schluchten", img: "https://images.pexels.com/photos/12850796/pexels-photo-12850796.jpeg", desc: "Eine kurze, aber beeindruckende Tour zu den marsähnlichen Landschaften der Konorchek-Schluchten. Ideal für einen Wochenendausflug.", difficulty: "Leicht", duration: "2 Tage", price: "ab $300" }
+                ],
+                footer_copyright: "© 2025 Kyrgyz Expedition. Alle Rechte vorbehalten."
+            }
+        };
+
+        const app = createApp({
+            setup() {
+                const store = reactive({ theme: 'dark', language: 'ru' });
+                const t = computed(() => translations[store.language]);
+                const toggleTheme = () => { store.theme = store.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('theme', store.theme); };
+                const setLanguage = (lang) => { store.language = lang; localStorage.setItem('language', lang); document.documentElement.lang = lang; document.title = t.value.site_title; };
+                watchEffect(() => { document.documentElement.classList.toggle('dark', store.theme === 'dark'); });
+                onMounted(() => {
+                    const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                    store.theme = savedTheme;
+                    const savedLang = localStorage.getItem('language') || 'ru';
+                    setLanguage(savedLang);
+                });
+                return { store, t, toggleTheme, setLanguage };
+            }
+        });
+
+        // --- COMPONENTS ---
+
+        app.component('app-header', {
+            props: ['currentTheme', 'currentLang', 't'],
+            emits: ['toggleTheme', 'setLanguage'],
+            setup(props, { emit }) {
+                const isLangDropdownOpen = ref(false);
+                const toggleLangDropdown = () => { isLangDropdownOpen.value = !isLangDropdownOpen.value; };
+                const selectLanguage = (lang) => { emit('setLanguage', lang); isLangDropdownOpen.value = false; };
+                return { isLangDropdownOpen, toggleLangDropdown, selectLanguage };
+            },
+            template: `
+                <header class="fixed top-0 left-0 right-0 z-40 bg-white dark:bg-black md:bg-white/80 md:dark:bg-black/70 md:backdrop-blur-sm transition-colors duration-300">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="flex items-center justify-between h-16 md:h-20">
+                            <a href="./index.html" class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white tracking-wider">{{ t.company_name }}</a>
+                            <div class="flex items-center">
+                                <nav class="hidden md:flex items-baseline space-x-4">
+                                    <a href="./index.html" class="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">{{ t.nav_home }}</a>
+                                </nav>
+                                <div class="ml-4 flex items-center space-x-2">
+                                    <div class="relative">
+                                        <button @click="toggleLangDropdown" class="bg-gray-200 dark:bg-gray-700 px-3 py-1.5 rounded-full text-sm font-medium">{{ currentLang.toUpperCase() }}</button>
+                                        <div v-if="isLangDropdownOpen" class="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
+                                            <a href="#" @click.prevent="selectLanguage('ru')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Русский</a>
+                                            <a href="#" @click.prevent="selectLanguage('en')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">English</a>
+                                            <a href="#" @click.prevent="selectLanguage('de')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Deutsch</a>
+                                        </div>
+                                    </div>
+                                    <button @click="$emit('toggleTheme')" type="button" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
+                                        <svg v-if="currentTheme === 'light'" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                                        <svg v-else class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1zM6.464 14.364l-.707.707a1 1 0 001.414 1.414l.707-.707a1 1 0 00-1.414-1.414z"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            `
+        });
+
+        app.component('app-biketour-list', {
+            props: ['t'],
+            template: `
+                <section class="py-16 md:py-24 bg-white dark:bg-black">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="grid gap-12 md:gap-16">
+                            <div v-for="tour in t.bike_tours" :key="tour.id" class="grid md:grid-cols-2 gap-8 items-center">
+                                <img :src="tour.img" :alt="tour.title" class="rounded-lg shadow-lg w-full h-80 object-cover">
+                                <div>
+                                    <h3 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{{ tour.title }}</h3>
+                                    <p class="mt-4 text-gray-600 dark:text-gray-300">{{ tour.desc }}</p>
+                                    <div class="mt-6 flex flex-wrap gap-x-6 gap-y-4 text-sm">
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                            <span class="font-semibold mr-1">{{ t.tour_difficulty }}:</span> {{ tour.difficulty }}
+                                        </div>
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            <span class="font-semibold mr-1">{{ t.tour_duration }}:</span> {{ tour.duration }}
+                                        </div>
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5a2 2 0 012 2v5a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h.01"></path>
+                                            </svg>
+                                            <span class="font-semibold mr-1">{{ t.tour_price }}:</span> {{ tour.price }}
+                                        </div>
+                                    </div>
+                                    <a href="#" class="mt-8 inline-block bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">{{ t.details_btn }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `
+        });
+
+        app.component('app-footer', {
+            props: ['t'],
+            template: `<footer class="bg-gray-100 dark:bg-gray-900"><div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center"><p class="text-gray-500 dark:text-gray-400">{{ t.footer_copyright }}</p></div></footer>`
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>

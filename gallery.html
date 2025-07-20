@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Галерея - Kyrgyz Expedition</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: #fff; }
+        body.dark { background-color: #0a0a0a; }
+        html { scroll-behavior: smooth; }
+        .lang-btn.active { color: #3b82f6; font-weight: bold; }
+        .dark .lang-btn.active { color: #60a5fa; }
+        .lightbox { background-color: rgba(0, 0, 0, 0.85); }
+    </style>
+</head>
+<body class="bg-white dark:bg-black text-gray-800 dark:text-gray-200 transition-colors duration-500">
+
+    <div id="app">
+        <app-header
+            @toggle-theme="toggleTheme"
+            @set-language="setLanguage"
+            :current-theme="store.theme"
+            :current-lang="store.language"
+            :t="t"
+        ></app-header>
+
+        <main>
+            <app-simple-gallery :t="t"></app-simple-gallery>
+        </main>
+
+        <app-footer :t="t"></app-footer>
+    </div>
+
+    <script>
+        const { createApp, reactive, computed, onMounted, watchEffect, ref } = Vue;
+
+        const translations = {
+            ru: {
+                site_title: "Kyrgyz Expedition - Галерея",
+                company_name: "Kyrgyz Expedition",
+                nav_home: "Главная",
+                gallery_page: {
+                    title: "Галерея Наших Путешествий",
+                    subtitle: "Посмотрите на Кыргызстан нашими глазами. Моменты, которые мы запечатлели для вас.",
+                    images: [
+                        { id: 1, src: 'img/IMG_1600.JPG', alt: 'Фото из путешествия 1' },
+                        { id: 2, src: 'img/IMG_1617.JPG', alt: 'Фото из путешествия 2' },
+                        { id: 3, src: 'img/IMG_1620.JPG', alt: 'Фото из путешествия 3' },
+                        { id: 4, src: 'img/IMG_1626.JPG', alt: 'Фото из путешествия 4' },
+                        { id: 5, src: 'img/IMG_1738.JPG', alt: 'Фото из путешествия 5' },
+                        { id: 6, src: 'img/IMG_1740.JPG', alt: 'Фото из путешествия 6' },
+                        { id: 7, src: 'img/IMG_1741.JPG', alt: 'Фото из путешествия 7' },
+                        { id: 8, src: 'img/IMG_1925.JPG', alt: 'Фото из путешествия 8' },
+                        { id: 9, src: 'img/IMG_1928.JPG', alt: 'Фото из путешествия 9' },
+                        { id: 10, src: 'img/IMG_1930.JPG', alt: 'Фото из путешествия 10' },
+                        { id: 11, src: 'img/IMG_1931.JPG', alt: 'Фото из путешествия 11' },
+                        { id: 12, src: 'img/IMG_1933.JPG', alt: 'Фото из путешествия 12' },
+                        { id: 13, src: 'img/IMG_1934.JPG', alt: 'Фото из путешествия 13' },
+                        { id: 14, src: 'img/IMG_1936.JPG', alt: 'Фото из путешествия 14' },
+                        { id: 15, src: 'img/IMG_1937.JPG', alt: 'Фото из путешествия 15' },
+                        { id: 16, src: 'img/IMG_1938.JPG', alt: 'Фото из путешествия 16' },
+                        { id: 17, src: 'img/IMG_1939.JPG', alt: 'Фото из путешествия 17' },
+                        { id: 18, src: 'img/IMG_1943.JPG', alt: 'Фото из путешествия 18' }, // HEIC -> JPG
+                        { id: 19, src: 'img/IMG_1947.JPG', alt: 'Фото из путешествия 19' }, // HEIC -> JPG
+                        { id: 20, src: 'img/IMG_1948.JPG', alt: 'Фото из путешествия 20' }, // HEIC -> JPG
+                        { id: 21, src: 'img/IMG_1965.JPG', alt: 'Фото из путешествия 21' },
+                        { id: 22, src: 'img/IMG_1969.JPG', alt: 'Фото из путешествия 22' }, // HEIC -> JPG
+                        { id: 23, src: 'img/IMG_1970.JPG', alt: 'Фото из путешествия 23' },
+                        { id: 24, src: 'img/IMG_1971.JPG', alt: 'Фото из путешествия 24' },
+                        { id: 25, src: 'img/IMG_1972.JPG', alt: 'Фото из путешествия 25' },
+                        { id: 26, src: 'img/IMG_1973.JPG', alt: 'Фото из путешествия 26' },
+                        { id: 27, src: 'img/IMG_1974.JPG', alt: 'Фото из путешествия 27' },
+                        { id: 28, src: 'img/IMG_1975.JPG', alt: 'Фото из путешествия 28' },
+                        { id: 29, src: 'img/IMG_1976.JPG', alt: 'Фото из путешествия 29' },
+                        { id: 30, src: 'img/IMG_5957.JPG', alt: 'Фото из путешествия 30' },
+                        { id: 31, src: 'img/IMG_5961.JPG', alt: 'Фото из путешествия 31' },
+                        { id: 32, src: 'img/IMG_5963.JPG', alt: 'Фото из путешествия 32' },
+                        { id: 33, src: 'img/IMG_5964.JPG', alt: 'Фото из путешествия 33' },
+                        { id: 34, src: 'img/IMG_5965.JPG', alt: 'Фото из путешествия 34' },
+                        { id: 35, src: 'img/IMG_5967.JPG', alt: 'Фото из путешествия 35' },
+                        { id: 36, src: 'img/IMG_6086.JPG', alt: 'Фото из путешествия 36' },
+                        { id: 37, src: 'img/IMG_6087.JPG', alt: 'Фото из путешествия 37' },
+                        { id: 38, src: 'img/IMG_6088.JPG', alt: 'Фото из путешествия 38' },
+                        { id: 39, src: 'img/IMG_6089.JPG', alt: 'Фото из путешествия 39' },
+                        { id: 40, src: 'img/IMG_6091.JPG', alt: 'Фото из путешествия 40' },
+                        { id: 41, src: 'img/IMG_6092.JPG', alt: 'Фото из путешествия 41' },
+                        { id: 42, src: 'img/IMG_6093.JPG', alt: 'Фото из путешествия 42' },
+                        { id: 43, src: 'img/IMG_6095.JPG', alt: 'Фото из путешествия 43' },
+                        { id: 44, src: 'img/IMG_6138.JPG', alt: 'Фото из путешествия 44' },
+                        { id: 45, src: 'img/IMG_6140.JPG', alt: 'Фото из путешествия 45' },
+                        { id: 46, src: 'img/IMG_6141.JPG', alt: 'Фото из путешествия 46' },
+                        { id: 47, src: 'img/IMG_6142.JPG', alt: 'Фото из путешествия 47' },
+                        { id: 48, src: 'img/IMG_6146.JPG', alt: 'Фото из путешествия 48' },
+                        { id: 49, src: 'img/IMG_6148.JPG', alt: 'Фото из путешествия 49' },
+                        { id: 50, src: 'img/IMG_6152.JPG', alt: 'Фото из путешествия 50' },
+                        { id: 51, src: 'img/IMG_6520.JPG', alt: 'Фото из путешествия 51' },
+                        { id: 52, src: 'img/IMG_6521.JPG', alt: 'Фото из путешествия 52' },
+                        { id: 53, src: 'img/IMG_6522.JPG', alt: 'Фото из путешествия 53' },
+                        { id: 54, src: 'img/IMG_6523.JPG', alt: 'Фото из путешествия 54' }
+                    ]
+                },
+                footer_copyright: "© 2025 Kyrgyz Expedition. Все права защищены."
+            },
+            en: { // English translations are simplified but follow the same structure
+                site_title: "Kyrgyz Expedition - Gallery",
+                company_name: "Kyrgyz Expedition",
+                nav_home: "Home",
+                gallery_page: {
+                    title: "Gallery of Our Travels",
+                    subtitle: "See Kyrgyzstan through our eyes. Moments we have captured for you.",
+                    images: [
+                        // The same image list as in 'ru' but you can provide English alt text if needed
+                        { id: 1, src: 'img/IMG_1600.JPG', alt: 'Travel photo 1' },
+                        { id: 2, src: 'img/IMG_1617.JPG', alt: 'Travel photo 2' },
+                        { id: 3, src: 'img/IMG_1620.JPG', alt: 'Travel photo 3' },
+                        { id: 4, src: 'img/IMG_1626.JPG', alt: 'Travel photo 4' },
+                        { id: 5, src: 'img/IMG_1738.JPG', alt: 'Travel photo 5' },
+                        { id: 6, src: 'img/IMG_1740.JPG', alt: 'Travel photo 6' },
+                        { id: 7, src: 'img/IMG_1741.JPG', alt: 'Travel photo 7' },
+                        { id: 8, src: 'img/IMG_1925.JPG', alt: 'Travel photo 8' },
+                        { id: 9, src: 'img/IMG_1928.JPG', alt: 'Travel photo 9' },
+                        { id: 10, src: 'img/IMG_1930.JPG', alt: 'Travel photo 10' },
+                        { id: 11, src: 'img/IMG_1931.JPG', alt: 'Travel photo 11' },
+                        { id: 12, src: 'img/IMG_1933.JPG', alt: 'Travel photo 12' },
+                        { id: 13, src: 'img/IMG_1934.JPG', alt: 'Travel photo 13' },
+                        { id: 14, src: 'img/IMG_1936.JPG', alt: 'Travel photo 14' },
+                        { id: 15, src: 'img/IMG_1937.JPG', alt: 'Travel photo 15' },
+                        { id: 16, src: 'img/IMG_1938.JPG', alt: 'Travel photo 16' },
+                        { id: 17, src: 'img/IMG_1939.JPG', alt: 'Travel photo 17' },
+                        { id: 18, src: 'img/IMG_1943.JPG', alt: 'Travel photo 18' },
+                        { id: 19, src: 'img/IMG_1947.JPG', alt: 'Travel photo 19' },
+                        { id: 20, src: 'img/IMG_1948.JPG', alt: 'Travel photo 20' },
+                        { id: 21, src: 'img/IMG_1965.JPG', alt: 'Travel photo 21' },
+                        { id: 22, src: 'img/IMG_1969.JPG', alt: 'Travel photo 22' },
+                        { id: 23, src: 'img/IMG_1970.JPG', alt: 'Travel photo 23' },
+                        { id: 24, src: 'img/IMG_1971.JPG', alt: 'Travel photo 24' },
+                        { id: 25, src: 'img/IMG_1972.JPG', alt: 'Travel photo 25' },
+                        { id: 26, src: 'img/IMG_1973.JPG', alt: 'Travel photo 26' },
+                        { id: 27, src: 'img/IMG_1974.JPG', alt: 'Travel photo 27' },
+                        { id: 28, src: 'img/IMG_1975.JPG', alt: 'Travel photo 28' },
+                        { id: 29, src: 'img/IMG_1976.JPG', alt: 'Travel photo 29' },
+                        { id: 30, src: 'img/IMG_5957.JPG', alt: 'Travel photo 30' },
+                        { id: 31, src: 'img/IMG_5961.JPG', alt: 'Travel photo 31' },
+                        { id: 32, src: 'img/IMG_5963.JPG', alt: 'Travel photo 32' },
+                        { id: 33, src: 'img/IMG_5964.JPG', alt: 'Travel photo 33' },
+                        { id: 34, src: 'img/IMG_5965.JPG', alt: 'Travel photo 34' },
+                        { id: 35, src: 'img/IMG_5967.JPG', alt: 'Travel photo 35' },
+                        { id: 36, src: 'img/IMG_6086.JPG', alt: 'Travel photo 36' },
+                        { id: 37, src: 'img/IMG_6087.JPG', alt: 'Travel photo 37' },
+                        { id: 38, src: 'img/IMG_6088.JPG', alt: 'Travel photo 38' },
+                        { id: 39, src: 'img/IMG_6089.JPG', alt: 'Travel photo 39' },
+                        { id: 40, src: 'img/IMG_6091.JPG', alt: 'Travel photo 40' },
+                        { id: 41, src: 'img/IMG_6092.JPG', alt: 'Travel photo 41' },
+                        { id: 42, src: 'img/IMG_6093.JPG', alt: 'Travel photo 42' },
+                        { id: 43, src: 'img/IMG_6095.JPG', alt: 'Travel photo 43' },
+                        { id: 44, src: 'img/IMG_6138.JPG', alt: 'Travel photo 44' },
+                        { id: 45, src: 'img/IMG_6140.JPG', alt: 'Travel photo 45' },
+                        { id: 46, src: 'img/IMG_6141.JPG', alt: 'Travel photo 46' },
+                        { id: 47, src: 'img/IMG_6142.JPG', alt: 'Travel photo 47' },
+                        { id: 48, src: 'img/IMG_6146.JPG', alt: 'Travel photo 48' },
+                        { id: 49, src: 'img/IMG_6148.JPG', alt: 'Travel photo 49' },
+                        { id: 50, src: 'img/IMG_6152.JPG', alt: 'Travel photo 50' },
+                        { id: 51, src: 'img/IMG_6520.JPG', alt: 'Travel photo 51' },
+                        { id: 52, src: 'img/IMG_6521.JPG', alt: 'Travel photo 52' },
+                        { id: 53, src: 'img/IMG_6522.JPG', alt: 'Travel photo 53' },
+                        { id: 54, src: 'img/IMG_6523.JPG', alt: 'Travel photo 54' }
+                    ]
+                },
+                footer_copyright: "© 2025 Kyrgyz Expedition. All rights reserved."
+            },
+            de: { // German translations are simplified but follow the same structure
+                site_title: "Kyrgyz Expedition - Galerie",
+                company_name: "Kyrgyz Expedition",
+                nav_home: "Startseite",
+                gallery_page: {
+                    title: "Galerie unserer Reisen",
+                    subtitle: "Sehen Sie Kirgisistan mit unseren Augen. Momente, die wir für Sie festgehalten haben.",
+                    images: [
+                        // The same image list as in 'ru' but you can provide German alt text if needed
+                        { id: 1, src: 'img/IMG_1600.JPG', alt: 'Reisefoto 1' },
+                        { id: 2, src: 'img/IMG_1617.JPG', alt: 'Reisefoto 2' },
+                        { id: 3, src: 'img/IMG_1620.JPG', alt: 'Reisefoto 3' },
+                        // ... and so on for all images
+                    ]
+                },
+                footer_copyright: "© 2025 Kyrgyz Expedition. Alle Rechte vorbehalten."
+            }
+        };
+
+        const app = createApp({
+            setup() {
+                const store = reactive({ theme: 'dark', language: 'ru' });
+                const t = computed(() => translations[store.language]);
+                const toggleTheme = () => { store.theme = store.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('theme', store.theme); };
+                const setLanguage = (lang) => { store.language = lang; localStorage.setItem('language', lang); document.documentElement.lang = lang; document.title = t.value.site_title; };
+                watchEffect(() => { document.documentElement.classList.toggle('dark', store.theme === 'dark'); });
+                onMounted(() => {
+                    const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                    store.theme = savedTheme;
+                    const savedLang = localStorage.getItem('language') || 'ru';
+                    setLanguage(savedLang);
+                });
+                return { store, t, toggleTheme, setLanguage };
+            }
+        });
+
+        // --- COMPONENTS ---
+
+        app.component('app-header', {
+            props: ['currentTheme', 'currentLang', 't'],
+            emits: ['toggleTheme', 'setLanguage'],
+            setup(props, { emit }) {
+                const isLangDropdownOpen = ref(false);
+                const toggleLangDropdown = () => isLangDropdownOpen.value = !isLangDropdownOpen.value;
+                const selectLanguage = (lang) => { emit('setLanguage', lang); isLangDropdownOpen.value = false; };
+                return { isLangDropdownOpen, toggleLangDropdown, selectLanguage };
+            },
+            template: `
+                <header class="fixed top-0 left-0 right-0 z-40 bg-white dark:bg-black md:bg-white/80 md:dark:bg-black/70 md:backdrop-blur-sm transition-colors duration-300">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="flex items-center justify-between h-16 md:h-20">
+                            <a href="./index.html" class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white tracking-wider">{{ t.company_name }}</a>
+                            <div class="flex items-center">
+                                <nav class="hidden md:flex items-baseline space-x-4">
+                                    <a href="./index.html" class="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">{{ t.nav_home }}</a>
+                                </nav>
+                                <div class="ml-4 flex items-center space-x-2">
+                                    <div class="relative">
+                                        <button @click="toggleLangDropdown" class="bg-gray-200 dark:bg-gray-700 px-3 py-1.5 rounded-full text-sm font-medium">{{ currentLang.toUpperCase() }}</button>
+                                        <div v-if="isLangDropdownOpen" class="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
+                                            <a href="#" @click.prevent="selectLanguage('ru')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Русский</a>
+                                            <a href="#" @click.prevent="selectLanguage('en')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">English</a>
+                                            <a href="#" @click.prevent="selectLanguage('de')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Deutsch</a>
+                                        </div>
+                                    </div>
+                                    <button @click="$emit('toggleTheme')" type="button" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
+                                        <svg v-if="currentTheme === 'light'" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                                        <svg v-else class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1zM6.464 14.364l-.707.707a1 1 0 001.414 1.414l.707-.707a1 1 0 00-1.414-1.414z"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            `
+        });
+
+        app.component('app-simple-gallery', {
+            props: ['t'],
+            setup(props) {
+                const lightbox = reactive({
+                    isOpen: false,
+                    images: [],
+                    currentIndex: 0
+                });
+
+                const openLightbox = (index) => {
+                    lightbox.images = props.t.gallery_page.images;
+                    lightbox.currentIndex = index;
+                    lightbox.isOpen = true;
+                };
+
+                const closeLightbox = () => {
+                    lightbox.isOpen = false;
+                };
+
+                const nextImage = () => {
+                    lightbox.currentIndex = (lightbox.currentIndex + 1) % lightbox.images.length;
+                };
+
+                const prevImage = () => {
+                    lightbox.currentIndex = (lightbox.currentIndex - 1 + lightbox.images.length) % lightbox.images.length;
+                };
+
+                onMounted(() => {
+                    const handleKeydown = (e) => {
+                        if (!lightbox.isOpen) return;
+                        if (e.key === 'Escape') closeLightbox();
+                        if (e.key === 'ArrowRight') nextImage();
+                        if (e.key === 'ArrowLeft') prevImage();
+                    };
+                    window.addEventListener('keydown', handleKeydown);
+                });
+
+                return { t: props.t, lightbox, openLightbox, closeLightbox, nextImage, prevImage };
+            },
+            template: `
+                <section class="py-24 md:py-32 bg-white dark:bg-black">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="text-center mb-12">
+                            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">{{ t.gallery_page.title }}</h1>
+                            <p class="mt-4 text-lg text-gray-500 dark:text-gray-400 max-w-3xl mx-auto">{{ t.gallery_page.subtitle }}</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <div v-for="(image, index) in t.gallery_page.images" :key="image.id" @click="openLightbox(index)" class="group relative aspect-w-1 aspect-h-1 rounded-lg overflow-hidden cursor-pointer">
+                                <img :src="image.src" :alt="image.alt" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300">
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <div v-if="lightbox.isOpen" @click.self="closeLightbox" class="lightbox fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <button @click="closeLightbox" class="absolute top-4 right-4 text-white text-4xl">&times;</button>
+                    <button @click="prevImage" class="absolute left-4 text-white text-4xl p-4">&#x2039;</button>
+                    <button @click="nextImage" class="absolute right-4 text-white text-4xl p-4">&#x203a;</button>
+                    
+                    <img :src="lightbox.images[lightbox.currentIndex].src" class="max-w-full max-h-full rounded-lg shadow-2xl">
+                </div>
+            `
+        });
+
+        app.component('app-footer', {
+            props: ['t'],
+            template: `<footer class="bg-gray-100 dark:bg-gray-900"><div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center"><p class="text-gray-500 dark:text-gray-400">{{ t.footer_copyright }}</p></div></footer>`
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>

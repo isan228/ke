@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор резюме</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+<style>
+    @media print {
+        body {
+            background: white !important;
+        }
+
+        .container {
+            display: block !important;
+        }
+
+        .form-container {
+            display: none !important;
+        }
+
+        .resume-preview {
+            width: 100% !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+        }
+
+        #resume {
+            font-size: 11px !important;
+            padding: 0 !important;
+            line-height: 1.3 !important;
+        }
+
+        .section {
+            padding: 6px !important;
+        }
+
+        h2, h3 {
+            font-size: 13px !important;
+        }
+
+        ul {
+            padding-left: 16px;
+        }
+    }
+</style>
+
+</head>
+<body class="font-roboto bg-gray-100 flex justify-center p-5">
+    <div class="container flex gap-8 max-w-7xl">
+        <div class="form-container bg-white p-6 rounded-lg shadow-lg w-96">
+            <h1 class="text-2xl text-gray-800 mb-5 font-bold">Создать резюме</h1>
+            <form id="resumeForm">
+                <label for="name" class="block mb-2 text-gray-600">Имя:</label>
+                <input type="text" id="name" value="Базаров Исан Жыргалбекович" placeholder="Ваше имя" class="w-full p-2 mb-4 border border-gray-300 rounded">
+
+                <label for="location" class="block mb-2 text-gray-600">Место проживания:</label>
+                <input type="text" id="location" value="Бишкек, Кыргызстан" placeholder="Место проживания" class="w-full p-2 mb-4 border border-gray-300 rounded">
+
+                <label for="phone" class="block mb-2 text-gray-600">Телефон:</label>
+                <input type="text" id="phone" value="+996 777 200 413" placeholder="Телефон" class="w-full p-2 mb-4 border border-gray-300 rounded">
+
+                <label for="email" class="block mb-2 text-gray-600">Почта:</label>
+                <input type="text" id="email" value="isanbazarov@gmail.com" placeholder="Почта" class="w-full p-2 mb-4 border border-gray-300 rounded">
+
+                <label for="telegram" class="block mb-2 text-gray-600">Telegram:</label>
+                <input type="text" id="telegram" value="@isanbaarov" placeholder="Telegram" class="w-full p-2 mb-4 border border-gray-300 rounded">
+
+                <label for="relocation" class="block mb-2 text-gray-600">Готов к переезду/удалёнке:</label>
+                <input type="text" id="relocation" value="Готов к переезду / удалённой работе" placeholder="Готовность к переезду/удалёнке" class="w-full p-2 mb-4 border border-gray-300 rounded">
+
+                <label for="goal" class="block mb-2 text-gray-600">Цель:</label>
+                <textarea id="goal" placeholder="Цель" class="w-full p-2 mb-4 border border-gray-300 rounded min-h-20">Поиск позиции в области веб-разработки / программной инженерии, где смогу применить свои технические и коммуникативные навыки, а также расти как специалист.</textarea>
+
+                <label for="education" class="block mb-2 text-gray-600">Образование:</label>
+                <textarea id="education" placeholder="Образование" class="w-full p-2 mb-4 border border-gray-300 rounded min-h-20">Кыргызско-Российский Славянский Университет (КРСУ)
+Специальность: Программная инженерия
+2021 — 2025 (ожидаемое окончание)</textarea>
+
+                <label for="experience" class="block mb-2 text-gray-600">Опыт работы:</label>
+                <textarea id="experience" placeholder="Опыт работы" class="w-full p-2 mb-4 border border-gray-300 rounded min-h-20">Тренер — Dostuk Gym
+Бишкек | Апрель 2023 — по настоящее время
+• Проведение персональных и групповых тренировок
+• Составление программ по фитнесу и питанию
+• Консультирование клиентов по правильной технике и диете
+
+Официант — Кофейня Michele
+Бишкек | Июнь 2021 — Август 2022
+• Обслуживание гостей
+• Работа с кассой
+• Поддержание высокого уровня сервиса
+
+Сотрудник службы безопасности — Terranova
+Бишкек | Май 2022 — Сентябрь 2022
+• Контроль за порядком в торговом зале
+• Предотвращение краж
+• Видеонаблюдение и отчётность</textarea>
+
+                <label for="skills" class="block mb-2 text-gray-600">Навыки (через запятую):</label>
+                <textarea id="skills" placeholder="Навыки" class="w-full p-2 mb-4 border border-gray-300 rounded min-h-20">HTML, CSS, JavaScript, Vue.js, Node.js, Express.js, REST API, PostgreSQL, MSSQL, Django, Flask, Multer, Cloudinary, SolidWorks (базово), API тестирование, Linux Ubuntu, деплой на сервер, парсинг данных, Excel, Word, PowerPoint, Коммуникабельность, Стрессоустойчивость, Умение работать в команде, Пунктуальность, Желание развиваться, Умение обучать и делиться опытом, Ответственность, Организованность</textarea>
+
+                <label for="languages" class="block mb-2 text-gray-600">Языки:</label>
+                <textarea id="languages" placeholder="Языки" class="w-full p-2 mb-4 border border-gray-300 rounded min-h-20">Кыргызский — свободно
+Русский — свободно
+Английский — базовый уровень (готовность к изучению)</textarea>
+
+                <label for="projects" class="block mb-2 text-gray-600">Проекты:</label>
+                <textarea id="projects" placeholder="Проекты" class="w-full p-2 mb-4 border border-gray-300 rounded min-h-20">1. Сайт для туристов Кыргызстана
+Node.js, Express.js, Tailwind CSS, HTML, Multer, PostgreSQL
+— Поиск мест, карта, категории, фильтрация
+2. Сайт для отслеживания калорий и тренировок
+Node.js, Express.js, PostgreSQL + парсинг с других сайтов
+— Личный кабинет, расчёт нормы ККАЛ, статистика, упражнения
+3. Sherdoc.kg
+Node.js, PostgreSQL, Cloudinary, сервер на Ubuntu Linux
+— База бойцов ММА, история боёв, статистика (сервер отключён, домен в собственности)
+4. Ознакомительный сайт для клиники “Доктор Профи”
+Django + Flask
+— Контактная информация, онлайн-запись, список услуг</textarea>
+
+                <label for="hobbies" class="block mb-2 text-gray-600">Хобби:</label>
+                <textarea id="hobbies" placeholder="Хобби" class="w-full p-2 mb-4 border border-gray-300 rounded min-h-20">Спорт и тренировки
+Греко-римская борьба
+Армрестлинг</textarea>
+
+                <label for="photo" class="block mb-2 text-gray-600">Фото:</label>
+                <input type="file" id="photo" accept="image/*" class="w-full p-2 mb-4 border border-gray-300 rounded">
+
+                <button type="button" onclick="generateResume()" class="w-full p-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Предпросмотр</button>
+                <button type="button" onclick="exportPDF()" class="w-full p-3 bg-green-600 text-white rounded mt-2 hover:bg-green-700 transition">Скачать PDF</button>
+            </form>
+        </div>
+        <div class="resume-preview bg-white p-6 rounded-lg shadow-lg w-[600px]">
+            <h1 class="text-2xl text-gray-800 mb-5 font-bold">Предпросмотр резюме</h1>
+            <div id="resume" class="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 bg-white border border-gray-200 rounded">
+                <div class="photo-section col-span-1 text-center p-4 bg-gradient-to-br from-gray-100 to-gray-200 rounded">
+                    <img id="resumePhoto" src="" alt="Фото" class="w-40 h-40 object-cover border-4 border-blue-600 shadow-md">
+                </div>
+                <div class="header col-span-2 text-right mb-4 p-3 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded">
+                    <h2 id="resumeName" class="text-3xl font-poppins font-semibold">Имя</h2>
+                    <h3 id="resumeTitle" class="text-lg font-medium">Должность</h3>
+                </div>
+                <div class="section col-span-2 p-3 border-l-4 border-blue-600 bg-white rounded">
+                    <h3 class="text-lg font-poppins text-blue-600 mb-2 font-semibold uppercase">Контактная информация</h3>
+                    <p id="resumeContact"></p>
+                </div>
+                <div class="section col-span-2 p-3 border-l-4 border-blue-600 bg-white rounded">
+                    <h3 class="text-lg font-poppins text-blue-600 mb-2 font-semibold uppercase">Цель</h3>
+                    <p id="resumeGoal"></p>
+                </div>
+                <div class="section col-span-2 p-3 border-l-4 border-blue-600 bg-white rounded">
+                    <h3 class="text-lg font-poppins text-blue-600 mb-2 font-semibold uppercase">Образование</h3>
+                    <p id="resumeEducation"></p>
+                </div>
+                <div class="section col-span-2 p-3 border-l-4 border-blue-600 bg-white rounded">
+                    <h3 class="text-lg font-poppins text-blue-600 mb-2 font-semibold uppercase">Опыт работы</h3>
+                    <p id="resumeExperience"></p>
+                </div>
+                <div class="section skills col-span-2 p-3 border-l-4 border-blue-600 bg-white rounded">
+                    <h3 class="text-lg font-poppins text-blue-600 mb-2 font-semibold uppercase">Навыки</h3>
+                    <ul id="resumeSkills" class="flex flex-wrap gap-2"></ul>
+                </div>
+                <div class="section col-span-2 p-3 border-l-4 border-blue-600 bg-white rounded">
+                    <h3 class="text-lg font-poppins text-blue-600 mb-2 font-semibold uppercase">Языки</h3>
+                    <p id="resumeLanguages"></p>
+                </div>
+                <div class="section projects col-span-2 p-3 border-l-4 border-blue-600 bg-white rounded">
+                    <h3 class="text-lg font-poppins text-blue-600 mb-2 font-semibold uppercase">Проекты</h3>
+                    <ul id="resumeProjects" class="list-none"></ul>
+                </div>
+                <div class="section col-span-2 p-3 border-l-4 border-blue-600 bg-white rounded">
+                    <h3 class="text-lg font-poppins text-blue-600 mb-2 font-semibold uppercase">Хобби</h3>
+                    <p id="resumeHobbies"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let photoFile = null;
+
+            document.getElementById('photo').addEventListener('change', function(e) {
+                photoFile = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('resumePhoto').src = e.target.result;
+                };
+                reader.readAsDataURL(photoFile);
+            });
+
+            window.generateResume = function() {
+                console.log('Запуск функции generateResume...');
+                const name = document.getElementById('name').value || 'Базаров Исан Жыргалбекович';
+                const location = document.getElementById('location').value || 'Бишкек, Кыргызстан';
+                const phone = document.getElementById('phone').value || '+996 777 200 413';
+                const email = document.getElementById('email').value || 'isanbazarov@gmail.com';
+                const telegram = document.getElementById('telegram').value || '@isanbaarov';
+                const relocation = document.getElementById('relocation').value || 'Готов к переезду / удалённой работе';
+                const goal = document.getElementById('goal').value || 'Поиск позиции в области веб-разработки / программной инженерии, где смогу применить свои технические и коммуникативные навыки, а также расти как специалист.';
+                const education = document.getElementById('education').value || 'Кыргызско-Российский Славянский Университет (КРСУ)\nСпециальность: Программная инженерия\n2021 — 2025 (ожидаемое окончание)';
+                const experience = document.getElementById('experience').value || 'Тренер — Dostuk Gym\nБишкек | Апрель 2023 — по настоящее время\n• Проведение персональных и групповых тренировок\n• Составление программ по фитнесу и питанию\n• Консультирование клиентов по правильной технике и диете\n\nОфициант — Кофейня Michele\nБишкек | Июнь 2021 — Август 2022\n• Обслуживание гостей\n• Работа с кассой\n• Поддержание высокого уровня сервиса\n\nСотрудник службы безопасности — Terranova\nБишкек | Май 2022 — Сентябрь 2022\n• Контроль за порядком в торговом зале\n• Предотвращение краж\n• Видеонаблюдение и отчётность';
+                const skills = document.getElementById('skills').value.split(',').map(s => s.trim()).filter(s => s);
+                const languages = document.getElementById('languages').value || 'Кыргызский — свободно\nРусский — свободно\nАнглийский — базовый уровень (готовность к изучению)';
+                const projects = document.getElementById('projects').value.split('\n').filter(p => p.trim()).map(p => `<li class="mb-1">${p}</li>`).join('');
+                const hobbies = document.getElementById('hobbies').value || 'Спорт и тренировки\nГреко-римская борьба\nАрмрестлинг';
+
+                const elements = {
+                    name: document.getElementById('resumeName'),
+                    title: document.getElementById('resumeTitle'),
+                    contact: document.getElementById('resumeContact'),
+                    goal: document.getElementById('resumeGoal'),
+                    education: document.getElementById('resumeEducation'),
+                    experience: document.getElementById('resumeExperience'),
+                    skills: document.getElementById('resumeSkills'),
+                    languages: document.getElementById('resumeLanguages'),
+                    projects: document.getElementById('resumeProjects'),
+                    hobbies: document.getElementById('resumeHobbies')
+                };
+
+                Object.keys(elements).forEach(key => {
+                    if (!elements[key]) {
+                        console.error(`Элемент с ID ${key} не найден`);
+                        alert(`Элемент "${key}" не найден. Проверьте HTML-структуру.`);
+                        return;
+                    }
+                });
+
+                if (elements.name) elements.name.innerText = name;
+                if (elements.title) elements.title.innerText = 'Программный инженер';
+                if (elements.contact) elements.contact.innerText = `Место проживания: ${location}\nТелефон: ${phone}\nПочта: ${email}\nTelegram: ${telegram}\n${relocation}`;
+                if (elements.goal) elements.goal.innerText = goal;
+                if (elements.education) elements.education.innerText = education;
+                if (elements.experience) elements.experience.innerText = experience;
+                if (elements.skills) elements.skills.innerHTML = skills.map(skill => `<li class="bg-blue-600 text-white px-2 py-1 rounded text-sm">${skill}</li>`).join('');
+                if (elements.languages) elements.languages.innerText = languages;
+                if (elements.projects) elements.projects.innerHTML = projects;
+                if (elements.hobbies) elements.hobbies.innerText = hobbies;
+
+                console.log('Предпросмотр обновлен успешно');
+            };
+
+         window.exportPDF = function () {
+    const { jsPDF } = window.jspdf;
+    const resume = document.getElementById('resume');
+
+    if (!resume) {
+        alert('Элемент резюме не найден. Проверьте HTML.');
+        return;
+    }
+
+    // Устанавливаем временно уменьшенный масштаб
+    resume.style.transform = 'scale(0.75)';
+    resume.style.transformOrigin = 'top left';
+    resume.style.width = '794px'; // A4 в пикселях при 96 dpi
+
+    html2canvas(resume, { scale: 2, useCORS: true }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = 210;
+        const pageHeight = 297;
+        const imgWidth = pageWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+        }
+
+        pdf.save('resume.pdf');
+
+        // Вернуть обратно стиль
+        resume.style.transform = '';
+        resume.style.width = '';
+    }).catch(error => {
+        console.error('Ошибка при экспорте в PDF:', error);
+        alert('Произошла ошибка при экспорте в PDF. Проверьте консоль для деталей.');
+    });
+};
+        });
+    </script>
+</body>
+</html>
