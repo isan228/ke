@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Покупка снаряжения — Kyrgyz Expedition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: #fff; }
+        body.dark { background-color: #0a0a0a; }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="bg-white dark:bg-black text-gray-800 dark:text-gray-200 transition-colors duration-500">
+    <div class="min-h-screen flex flex-col">
+        <header class="bg-white dark:bg-black shadow-md py-4">
+            <div class="max-w-7xl mx-auto flex items-center justify-between px-4">
+                <a href="index.html" class="flex items-center space-x-3">
+                    <img src="img/logo1.jpeg" alt="Kyrgyz Expedition Logo" class="h-12 w-12 rounded-full shadow-md">
+                    <span class="text-2xl font-bold text-gray-900 dark:text-white">Kyrgyz Expedition</span>
+                </a>
+                <a href="index.html" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">На главную</a>
+            </div>
+        </header>
+        <main class="flex-1">
+            <section class="max-w-5xl mx-auto px-4 py-12">
+                <h1 class="text-3xl md:text-4xl font-extrabold mb-6 text-center">Покупка снаряжения</h1>
+                <div class="mb-8 text-lg text-gray-700 dark:text-gray-300 text-center">
+                    <p>В нашем магазине вы можете приобрести качественное туристическое снаряжение для походов, экспедиций и активного отдыха.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col items-center">
+                        <img src="img/palatka.jpg" alt="Палатка" class="w-32 h-32 rounded-lg mb-4 object-cover border-2 border-blue-200 dark:border-blue-700">
+                        <h3 class="font-bold text-lg mb-1">Палатка 2-местная</h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-2">Лёгкая и прочная палатка для двух человек. Влагозащита, москитная сетка.</p>
+                        <div class="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">7 500 сом</div>
+                        <button class="bg-blue-600 text-white font-bold py-2 px-6 rounded hover:bg-blue-700 transition-colors">Купить</button>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col items-center">
+                        <img src="img/spalnik.jpg" alt="Спальник" class="w-32 h-32 rounded-lg mb-4 object-cover border-2 border-blue-200 dark:border-blue-700">
+                        <h3 class="font-bold text-lg mb-1">Спальный мешок -15°C</h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-2">Тёплый спальник для холодных ночей. Компактный и лёгкий.</p>
+                        <div class="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">4 200 сом</div>
+                        <button class="bg-blue-600 text-white font-bold py-2 px-6 rounded hover:bg-blue-700 transition-colors">Купить</button>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col items-center">
+                        <img src="img/palka.jpg" alt="Треккинговые палки" class="w-32 h-32 rounded-lg mb-4 object-cover border-2 border-blue-200 dark:border-blue-700">
+                        <h3 class="font-bold text-lg mb-1">Треккинговые палки</h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-2">Лёгкие и прочные, регулируемая длина, нескользящие ручки.</p>
+                        <div class="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">2 000 сом</div>
+                        <button class="bg-blue-600 text-white font-bold py-2 px-6 rounded hover:bg-blue-700 transition-colors">Купить</button>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col items-center">
+                        <img src="img/IMG_6148.JPG" alt="Туристический рюкзак" class="w-32 h-32 rounded-lg mb-4 object-cover border-2 border-blue-200 dark:border-blue-700">
+                        <h3 class="font-bold text-lg mb-1">Туристический рюкзак 60л</h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-2">Удобный рюкзак с анатомической спинкой и множеством карманов.</p>
+                        <div class="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">5 800 сом</div>
+                        <button class="bg-blue-600 text-white font-bold py-2 px-6 rounded hover:bg-blue-700 transition-colors">Купить</button>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col items-center">
+                        <img src="img/IMG_6520.JPG" alt="Коврик" class="w-32 h-32 rounded-lg mb-4 object-cover border-2 border-blue-200 dark:border-blue-700">
+                        <h3 class="font-bold text-lg mb-1">Коврик туристический</h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-2">Изолирует от холода и влаги, лёгкий и компактный.</p>
+                        <div class="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">1 200 сом</div>
+                        <button class="bg-blue-600 text-white font-bold py-2 px-6 rounded hover:bg-blue-700 transition-colors">Купить</button>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col items-center">
+                        <img src="img/IMG_6140.JPG" alt="Фонарь" class="w-32 h-32 rounded-lg mb-4 object-cover border-2 border-blue-200 dark:border-blue-700">
+                        <h3 class="font-bold text-lg mb-1">Фонарь налобный</h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-2">Яркий свет, несколько режимов, влагозащита.</p>
+                        <div class="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">900 сом</div>
+                        <button class="bg-blue-600 text-white font-bold py-2 px-6 rounded hover:bg-blue-700 transition-colors">Купить</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <footer class="bg-gray-100 dark:bg-gray-900 py-8 mt-auto">
+            <div class="max-w-7xl mx-auto px-4 text-center text-gray-500 dark:text-gray-400">
+                © 2025 Kyrgyz Expedition. Все права защищены.
+            </div>
+        </footer>
+    </div>
+    <script>
+        // Тёмная тема по системным настройкам
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</body>
+</html> 

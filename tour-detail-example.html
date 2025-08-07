@@ -202,6 +202,26 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Расширенный блок информации о туре -->
+                                <div class="mb-12">
+                                    <h2 class="text-2xl font-bold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700">Подробнее о туре</h2>
+                                    <p class="mb-4 text-gray-700 dark:text-gray-300">
+                                        Этот тур — уникальная возможность познакомиться с красотой Чаткальских гор, пройти по живописным перевалам и долинам, увидеть кристально чистые озёра и водопады. Маршрут рассчитан на людей с базовой физической подготовкой, не требует специального альпинистского опыта. В сопровождении опытного гида вы узнаете много интересного о природе, истории и культуре региона.
+                                    </p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                                        <img src="img/IMG_6152.JPG" alt="Озеро Кара-Токо" class="rounded-lg shadow-md w-full h-64 object-cover">
+                                        <img src="img/IMG_6142.JPG" alt="Вид на Чаткальские стены" class="rounded-lg shadow-md w-full h-64 object-cover">
+                                    </div>
+                                    <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4">
+                                        <li>Маршрут: Бишкек — Талас — Кара-Буура — Чаткальская долина — Кара-Токо — Эшенкул — Бишкек</li>
+                                        <li>Протяжённость трекинга: ~30 км</li>
+                                        <li>Максимальная высота: 3200 м</li>
+                                        <li>Сложность: средняя</li>
+                                    </ul>
+                                    <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-4 text-blue-900 dark:text-blue-100 mb-2">
+                                        <strong>Совет:</strong> Возьмите с собой удобную обувь, солнцезащитные очки, головной убор и запас воды.
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="md:col-span-1">
@@ -222,6 +242,56 @@
                                     </div>
                                     <button @click="$emit('openBookingForm')" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors text-lg">{{ t.book_tour_btn }}</button>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Календарь дат туров -->
+                        <div class="mb-12 flex justify-center">
+                            <div class="w-full max-w-2xl">
+                                <h2 class="text-2xl font-bold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700 text-center">Календарь туров</h2>
+                                <calendar-tour :dates="t.dates_list"></calendar-tour>
+                            </div>
+                        </div>
+                        <!-- Блок советов: что взять с собой -->
+                        <div class="mb-12 flex justify-center">
+                            <div class="w-full max-w-2xl">
+                                <h2 class="text-2xl font-bold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700 text-center">Что взять с собой</h2>
+                                <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4">
+                                    <li>Удобная трекинговая обувь</li>
+                                    <li>Тёплая одежда (ночью может быть холодно)</li>
+                                    <li>Дождевик или ветровка</li>
+                                    <li>Головной убор и солнцезащитные очки</li>
+                                    <li>Солнцезащитный крем</li>
+                                    <li>Личная аптечка и необходимые лекарства</li>
+                                    <li>Запас воды и перекус</li>
+                                    <li>Фонарик или налобный светильник</li>
+                                    <li>Документы и немного наличных</li>
+                                </ul>
+                                <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-4 text-blue-900 dark:text-blue-100 mb-2 text-center">
+                                    <strong>Совет:</strong> Не перегружайте рюкзак — берите только самое необходимое!
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Карта маршрута тура -->
+                        <div class="mb-12 flex justify-center">
+                            <div class="w-full max-w-2xl">
+                                <h2 class="text-2xl font-bold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700 text-center">Карта маршрута</h2>
+                                <div class="rounded-lg overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700">
+                                    <iframe
+                                        src="https://www.openstreetmap.org/export/embed.html?bbox=71.0%2C41.0%2C73.5%2C42.5&amp;layer=mapnik"
+                                        style="width:100%; height:400px; border:0; display:block; margin:auto;"
+                                        allowfullscreen=""
+                                        loading="lazy"
+                                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                </div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">Маршрут проходит по Чаткальским горам, область: Кара-Буура — Кара-Токо — Эшенкул.</p>
+                            </div>
+                        </div>
+                        <!-- Прогноз погоды -->
+                        <div class="mb-12 flex justify-center">
+                            <div class="w-full max-w-2xl">
+                                <h2 class="text-2xl font-bold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700 text-center">Погода на даты тура</h2>
+                                <weather-forecast></weather-forecast>
                             </div>
                         </div>
 
@@ -287,6 +357,93 @@
         app.component('app-footer', {
             props: ['t'],
             template: `<footer class="bg-gray-100 dark:bg-gray-900"><div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center"><p class="text-gray-500 dark:text-gray-400">{{ t.footer_copyright }}</p></div></footer>`
+        });
+
+        app.component('calendar-tour', {
+            props: ['dates'],
+            data() {
+                return {
+                    year: 2024,
+                    months: [
+                        { name: 'Июнь', num: 5 },
+                        { name: 'Июль', num: 6 }
+                    ],
+                    daysInMonth: [30, 31],
+                    highlightDays: this.parseDates(this.dates)
+                };
+            },
+            methods: {
+                parseDates(dates) {
+                    // Преобразует t.dates_list в массив объектов {month: 5, days: [20,21,22]}
+                    const map = [];
+                    dates.forEach(str => {
+                        const [monthStr, daysStr] = str.split(':');
+                        if (!monthStr || !daysStr) return;
+                        const month = monthStr.trim() === 'Июнь' ? 5 : 6;
+                        const days = daysStr.split(',').join('-').split('-').map(s => parseInt(s.trim())).filter(Boolean);
+                        map.push({ month, days });
+                    });
+                    return map;
+                },
+                isHighlighted(month, day) {
+                    const found = this.highlightDays.find(m => m.month === month);
+                    return found && found.days.includes(day);
+                }
+            },
+            template: `
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div v-for="(month, idx) in months" :key="month.name" class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 w-64">
+                        <h3 class="text-lg font-bold mb-2">{{ month.name }} {{ year }}</h3>
+                        <div class="grid grid-cols-7 gap-1 text-center">
+                            <span v-for="d in ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']" :key="d" class="text-xs text-gray-500 dark:text-gray-400">{{ d }}</span>
+                            <span v-for="n in new Date(year, month.num, 1).getDay() === 0 ? 6 : new Date(year, month.num, 1).getDay() - 1" :key="'empty'+n"></span>
+                            <span v-for="day in daysInMonth[idx]" :key="day"
+                                :class="isHighlighted(month.num, day) ? 'bg-blue-500 text-white font-bold rounded-full' : 'text-gray-700 dark:text-gray-200'">
+                                {{ day }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        app.component('weather-forecast', {
+            data() {
+                return {
+                    loading: true,
+                    error: null,
+                    forecast: [],
+                    lat: 41.7, // Пример: Чаткальские горы
+                    lon: 72.5,
+                    apiKey: '20024ec7760daa80d3d5bfb6face150f'
+                };
+            },
+            mounted() {
+                fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${this.lat}&lon=${this.lon}&appid=${this.apiKey}&units=metric&lang=ru`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.list) {
+                            // Берём прогноз на 3 дня (по 1 в полдень)
+                            this.forecast = data.list.filter(item => item.dt_txt.includes('12:00:00')).slice(0, 3);
+                        }
+                        this.loading = false;
+                    })
+                    .catch(e => { this.error = 'Ошибка загрузки погоды'; this.loading = false; });
+            },
+            template: `
+                <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-4 text-blue-900 dark:text-blue-100 shadow-md">
+                    <div v-if="loading" class="text-center">Загрузка...</div>
+                    <div v-else-if="error" class="text-center text-red-500">{{ error }}</div>
+                    <div v-else class="flex flex-col md:flex-row justify-center gap-4">
+                        <div v-for="day in forecast" :key="day.dt" class="flex-1 text-center">
+                            <div class="font-bold text-lg mb-1">{{ new Date(day.dt_txt).toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' }) }}</div>
+                            <div class="text-3xl font-bold">{{ Math.round(day.main.temp) }}°C</div>
+                            <div class="mb-1">{{ day.weather[0].description }}</div>
+                            <img :src="'https://openweathermap.org/img/wn/' + day.weather[0].icon + '@2x.png'" :alt="day.weather[0].description" class="mx-auto">
+                        </div>
+                    </div>
+                </div>
+            `
         });
 
         app.mount('#app');

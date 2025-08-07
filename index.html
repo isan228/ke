@@ -113,7 +113,7 @@
                     { id: 1, img: 'https://images.pexels.com/photos/2440337/pexels-photo-2440337.jpeg', title: 'Trek to Ala-Kul', price: 'from $450' },
                     { id: 2, img: 'https://images.pexels.com/photos/1688033/pexels-photo-1688033.jpeg', title: 'Horses of Son-Kul', price: 'from $380' },
                     { id: 3, img: './photo_5402287222021025777_y.jpg', title: 'Canyons of the South', price: 'from $550' },
-                    { id: 4, img: './photo_5402287222021025777_y.jpg', title: 'Lenin Peak', price: 'from $1200' },
+                    { id: 4, img: './photo_5402287228021025777_y.jpg', title: 'Lenin Peak', price: 'from $1200' },
                     { id: 5, img: 'https://images.pexels.com/photos/2397414/pexels-photo-2397414.jpeg', title: 'Passes of the Pamir', price: 'from $900' },
                     { id: 6, img: 'https://images.pexels.com/photos/2085831/pexels-photo-2085831.jpeg', title: 'Winter Fairytale', price: 'from $600' }
                 ],
@@ -384,8 +384,8 @@
                 <section id="rentals" class="py-16 md:py-20 lg:py-28 bg-white dark:bg-black">
                      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div class="text-center mb-12">
-                            <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">{{ t.rentals_title }}</h2>
-                            <p class="mt-4 max-w-2xl mx-auto text-base md:text-lg text-gray-500 dark:text-gray-400">{{ t.rentals_subtitle }}</p>
+                            <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">Аренда и покупка снаряжения</h2>
+                            <p class="mt-4 max-w-2xl mx-auto text-base md:text-lg text-gray-500 dark:text-gray-400">Качественное оборудование для ваших путешествий. Вы можете взять снаряжение в аренду или приобрести его.</p>
                         </div>
                         <div class="grid gap-6 sm:gap-8 md:grid-cols-3">
                             <div v-for="item in t.rentals" :key="item.id" class="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800 p-6 text-center">
@@ -394,8 +394,9 @@
                                 <p class="text-gray-600 dark:text-gray-400 text-sm">{{ item.desc }}</p>
                             </div>
                         </div>
-                        <div class="text-center mt-12">
-                            <a href="#" class="inline-block bg-gray-800 text-white dark:bg-white dark:text-black font-bold py-3 px-8 text-lg rounded hover:bg-black dark:hover:bg-gray-200 transition-colors">{{ t.all_rentals_btn }}</a>
+                        <div class="text-center mt-12 flex flex-col md:flex-row gap-4 justify-center">
+                            <a href="arenda.html" class="inline-block bg-gray-800 text-white dark:bg-white dark:text-black font-bold py-3 px-8 text-lg rounded hover:bg-black dark:hover:bg-gray-200 transition-colors">Аренда снаряжения</a>
+                            <a href="equipment-shop.html" class="inline-block bg-blue-600 text-white font-bold py-3 px-8 text-lg rounded hover:bg-blue-700 transition-colors">Покупка снаряжения</a>
                         </div>
                     </div>
                 </section>`
@@ -441,7 +442,7 @@
                                 <p class="text-gray-600 dark:text-gray-300">{{ t.bishkek_kyrgyzstan }}</p>
                             </div>
                             
-                            <a href="#agency-info" class="inline-block bg-blue-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-blue-700 transition-colors">{{ t.learn_more_about_us }}</a>
+                            <a href="about.html" class="inline-block bg-blue-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-blue-700 transition-colors">{{ t.learn_more_about_us }}</a>
                         </div>
                         <div class="flex flex-col items-center justify-center space-y-8">
                             <div class="relative w-full max-w-xs h-32 md:h-40">
